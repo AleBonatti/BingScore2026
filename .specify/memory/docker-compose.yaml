@@ -1,0 +1,18 @@
+version: "3.9"
+
+services:
+    postgres:
+        image: postgres:16
+        container_name: bingescore-postgres
+        environment:
+            POSTGRES_DB: bingescore_db
+            POSTGRES_USER: bingescore_user
+            POSTGRES_PASSWORD: bingescore_password
+        ports:
+            - "5432:5432"
+        volumes:
+            - bingescore_pgdata:/var/lib/postgresql/data
+        restart: unless-stopped
+
+volumes:
+    bingescore_pgdata:
