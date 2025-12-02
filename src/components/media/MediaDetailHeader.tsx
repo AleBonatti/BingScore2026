@@ -22,11 +22,7 @@ export default function MediaDetailHeader({
     <div className="flex flex-col md:flex-row gap-6">
       {posterUrl && (
         <div className="flex-shrink-0">
-          <img
-            src={posterUrl}
-            alt={title}
-            className="w-full md:w-64 h-auto rounded-lg shadow-lg"
-          />
+          <img src={posterUrl} alt={title} className="w-full md:w-64 h-auto rounded-lg shadow-lg" />
         </div>
       )}
       <div className="flex-1">

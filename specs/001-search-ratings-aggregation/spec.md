@@ -13,7 +13,7 @@
 - Q: What specific visualization format should be used for displaying episode-by-episode ratings? → A: Raw data only
 - Q: How should the system behave when external API rate limits are exceeded? → A: Display error message only, allow immediate retry
 
-## User Scenarios & Testing *(mandatory)*
+## User Scenarios & Testing _(mandatory)_
 
 ### User Story 1 - Search for TV Series or Movie (Priority: P1)
 
@@ -78,7 +78,7 @@ For TV series, a user can see episode-by-episode ratings organized by season. Th
 - What happens when search returns no results?
 - How does the system handle very long titles or titles with special formatting?
 
-## Requirements *(mandatory)*
+## Requirements _(mandatory)_
 
 ### Functional Requirements
 
@@ -117,7 +117,7 @@ For TV series, a user can see episode-by-episode ratings organized by season. Th
 
 - **Aggregated Ratings Response**: Represents the complete rating information for a media item, including the unified identifiers, basic metadata (title, year, overview, images), overall ratings from all sources, and episode-by-episode ratings organized by season (for TV series only)
 
-## Success Criteria *(mandatory)*
+## Success Criteria _(mandatory)_
 
 ### Measurable Outcomes
 
@@ -144,6 +144,7 @@ For TV series, a user can see episode-by-episode ratings organized by season. Th
 ### Out of Scope
 
 This phase explicitly excludes:
+
 - User authentication and account creation
 - Database persistence or caching of any data
 - User-specific features (favorites, watch history, profiles)
@@ -162,6 +163,7 @@ This phase explicitly excludes:
 The user interface must adhere to these design principles:
 
 **Visual Style**:
+
 - Minimal, neutral, modern aesthetic with generous whitespace
 - Soft neutral color tones with minimal borders
 - App-like feel with consistent spacing and rounded corners
@@ -170,23 +172,27 @@ The user interface must adhere to these design principles:
 - Fluid transitions for smooth interactions
 
 **Color Mode Support**:
+
 - Both light and dark modes MUST be supported from day one
 - Use semantic colors that adapt automatically to the selected mode
 - Neutral palette: gray-100/900, slate-200/800
 - Accent color to be defined during implementation
 
 **Iconography**:
+
 - All icons MUST use Lucide icon library
 - Icons for navigation, ratings, and user actions
 - Consistent icon sizing and styling across the application
 
 **Motion & Interaction**:
+
 - Micro-interactions only (hover, focus, dropdowns)
 - CSS transitions or minimal animation library
 - Smooth transitions using standard durations (200ms)
 - No complex animations or motion effects
 
 **Accessibility**:
+
 - Focus states MUST be visible and clearly distinguished
 - Hover states MUST provide visual feedback
 - All interactive elements MUST be keyboard accessible
@@ -194,12 +200,14 @@ The user interface must adhere to these design principles:
 ### Layout Structure
 
 **Global Shell**:
+
 - Header component at the top (sticky positioning)
 - Main content area centered with maximum width constraints
 - Footer component at the bottom (minimal)
 - Modern, breathable spacing throughout
 
 **Responsive Behavior**:
+
 - Mobile-first design approach
 - Single-column layout on mobile devices
 - Multi-column layouts on desktop where appropriate
@@ -212,12 +220,14 @@ The user interface must adhere to these design principles:
 **Purpose**: Provide an intuitive entry point for the search flow
 
 **Layout Requirements**:
+
 - Search bar centered vertically within the main container
 - Autocomplete results appear in a floating panel below the search input
 - Search icon (Lucide) displayed inside the input field on the left side
 - Clean, uncluttered design focusing user attention on search
 
 **Interactive States**:
+
 - **Idle**: Empty input field with placeholder text
 - **Typing**: Active input with loading indicator (Lucide Loader icon) or subtle animation
 - **Results**: Display up to 8 results in a scrollable list
@@ -225,6 +235,7 @@ The user interface must adhere to these design principles:
 - **No Results**: Display friendly message when search returns no matches
 
 **Visual Requirements**:
+
 - Search bar MUST be prominent and immediately noticeable
 - Results panel MUST float above other content with appropriate shadow
 - Each result item MUST show title, year, media type, and poster thumbnail
@@ -237,6 +248,7 @@ The user interface must adhere to these design principles:
 **Layout Requirements**:
 
 **Desktop Layout** (two-column):
+
 - **Left Column**:
   - Poster image (prominent display)
   - Title and year
@@ -251,6 +263,7 @@ The user interface must adhere to these design principles:
   - Episode ratings display area
 
 **Mobile Layout** (single-column):
+
 - Poster at top
 - Title and metadata
 - Overall ratings stacked vertically
@@ -258,6 +271,7 @@ The user interface must adhere to these design principles:
 - Episode ratings below
 
 **Rating Card Requirements**:
+
 - Each rating source MUST have its own distinct card
 - Display rating score prominently
 - Show number of votes/reviews
@@ -266,6 +280,7 @@ The user interface must adhere to these design principles:
 - Handle partial data gracefully (some sources available, others not)
 
 **TV Series Specific**:
+
 - Season selector MUST use horizontal pill-style buttons
 - Currently selected season MUST be clearly indicated
 - Episode ratings MUST be displayed as raw data in a structured format (table or list)
@@ -277,15 +292,18 @@ The user interface must adhere to these design principles:
 The following UI components are required:
 
 **Navigation Components**:
+
 - **Header**: Sticky navigation with logo and links (Home, About, Placeholder)
 - **Footer**: Minimal footer with copyright and optional icon
 
 **Search Components**:
+
 - **SearchBar**: Input field with integrated Lucide search icon and loading state
 - **AutocompleteResults**: Floating panel displaying search results
 - **SearchResultItem**: Individual result card showing title, year, poster, media type
 
 **Media Detail Components**:
+
 - **MediaDetailHeader**: Display title, year, poster, and overview
 - **OverallRatingsPanel**: Container for rating cards from all sources
 - **RatingCard**: Individual rating display for a single source (TMDB, IMDb, or Trakt)
@@ -295,21 +313,25 @@ The following UI components are required:
 ### Visual Behavior Requirements
 
 **Hover Interactions**:
+
 - Apply subtle scale transformation (1.02x) on hover
 - Use opacity transitions for smooth feedback
 - Maintain accessibility with visible focus states
 
 **Focus Interactions**:
+
 - Visible outline for keyboard navigation
 - Clear indication of focused element
 - Maintain accessibility standards
 
 **Loading States**:
+
 - Display loading indicators when fetching data
 - Use Lucide Loader icon for consistency
 - Prevent layout shift during loading
 
 **Error States**:
+
 - Display user-friendly error messages
 - Indicate which specific service is unavailable
 - Provide graceful degradation when partial data is available
@@ -317,18 +339,21 @@ The following UI components are required:
 ### Responsive Design Requirements
 
 **Mobile Considerations**:
+
 - Touch-friendly target sizes for all interactive elements
 - Single-column layouts for narrow screens
 - Simplified navigation patterns
 - Optimized spacing for smaller screens
 
 **Desktop Considerations**:
+
 - Multi-column layouts where appropriate
 - Efficient use of horizontal space
 - Enhanced hover interactions
 - Larger content areas
 
 **Accessibility Requirements**:
+
 - Keyboard navigation for all interactive elements
 - Screen reader support for dynamic content
 - Sufficient color contrast in both light and dark modes
@@ -337,6 +362,7 @@ The following UI components are required:
 ### Optional Future Enhancements
 
 The following are explicitly out of scope for Phase 1 but noted for future consideration:
+
 - Animated transitions between seasons
 - Advanced filtering and sorting of episode ratings
 - Comparison mode for multiple series
@@ -348,6 +374,7 @@ The following are explicitly out of scope for Phase 1 but noted for future consi
 To ensure consistent implementation patterns and reduce ad-hoc technical decisions, the following utility libraries are designated as standard tools for this feature:
 
 ### Animation Library
+
 - **Purpose**: Composable UI micro-interactions (page transitions, hover/focus animations, list/element transitions)
 - **Requirements**:
   - Animations MUST remain optional and non-blocking
@@ -355,6 +382,7 @@ To ensure consistent implementation patterns and reduce ad-hoc technical decisio
   - Focus on subtle, purposeful motion rather than decorative effects
 
 ### Runtime Validation
+
 - **Purpose**: Validate external provider responses and request parameters
 - **Use Cases**:
   - Validating responses from TMDB, OMDb, and Trakt APIs
@@ -365,6 +393,7 @@ To ensure consistent implementation patterns and reduce ad-hoc technical decisio
   - Type-safe validation that integrates with TypeScript
 
 ### User Feedback System
+
 - **Purpose**: Display transient, global messages to users
 - **Use Cases**:
   - Error notifications (API failures, rate limits, network issues)
@@ -377,6 +406,7 @@ To ensure consistent implementation patterns and reduce ad-hoc technical decisio
   - Support for different message types (error, warning, info, success)
 
 ### Date/Time Formatting
+
 - **Purpose**: Format and manipulate dates consistently
 - **Use Cases**:
   - Displaying release years and dates for media items
@@ -388,6 +418,7 @@ To ensure consistent implementation patterns and reduce ad-hoc technical decisio
   - Avoid ad-hoc string manipulation or inconsistent native Date methods
 
 ### Implementation Notes
+
 - These libraries are considered part of the standard toolkit for BingeScore
 - Replacing any of these libraries should be treated as an architectural decision requiring constitution-level review
 - All libraries must be compatible with the React 18+ and TypeScript strict mode requirements defined in the project constitution

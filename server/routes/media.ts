@@ -7,8 +7,8 @@ import { FastifyPluginAsync } from 'fastify';
 import { createTmdbProvider } from '../providers/tmdb.js';
 import { createOmdbProvider } from '../providers/omdb.js';
 import { createTraktProvider } from '../providers/trakt.js';
-import { aggregateRatings } from '@/lib/domain/aggregation.js';
-import type { AggregateQueryParams, AggregateResponse } from '@/lib/types/api.js';
+import { aggregateRatings } from '../../lib/domain/aggregation.js';
+import type { AggregateQueryParams, AggregateResponse } from '../../lib/types/api.js';
 
 const mediaRoutes: FastifyPluginAsync = async (fastify) => {
   const tmdbProvider = createTmdbProvider(process.env.TMDB_API_KEY || '');

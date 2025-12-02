@@ -13,6 +13,7 @@ BingeScore Phase 1 delivers an anonymous, stateless web application for searchin
 
 **Language/Version**: TypeScript with Node.js 18+ LTS (strict mode enabled)
 **Primary Dependencies**:
+
 - **Backend**: Fastify (HTTP server), Zod (validation), date-fns (date formatting)
 - **Frontend**: React 18+, Vite (build tool), Tailwind CSS v4, Lucide icons, Framer Motion (animations), react-hot-toast (notifications), TanStack Query (data fetching)
 - **External APIs**: TMDB (search, details, ratings), OMDb (IMDb ratings), Trakt (ratings, episode data)
@@ -22,12 +23,14 @@ BingeScore Phase 1 delivers an anonymous, stateless web application for searchin
 **Target Platform**: Web browsers (modern Chrome, Firefox, Safari, Edge) + Node.js server (Docker container)
 **Project Type**: Full-stack web application (React SPA + Fastify API server)
 **Performance Goals**:
+
 - Search results appear within 2 seconds of user input (FR-002, SC-002)
 - Aggregated ratings display within 5 seconds of selection (SC-003)
 - Episode ratings for TV series display within 8 seconds (SC-004)
 - Support reasonable concurrent usage (stateless architecture scales horizontally)
 
 **Constraints**:
+
 - No database persistence (stateless, ephemeral data only)
 - No user authentication (anonymous access only)
 - No server-side caching (every request fetches fresh data from external APIs)
@@ -35,6 +38,7 @@ BingeScore Phase 1 delivers an anonymous, stateless web application for searchin
 - Must aggregate ratings from at least 2 out of 3 sources successfully 90% of the time (SC-006)
 
 **Scale/Scope**:
+
 - Phase 1 MVP with 3 prioritized user stories
 - 2 API routes: GET /api/search, GET /api/media/aggregate
 - 2 main pages: Home/Search, Media Detail
@@ -44,21 +48,24 @@ BingeScore Phase 1 delivers an anonymous, stateless web application for searchin
 
 ## Constitution Check
 
-*GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
+_GATE: Must pass before Phase 0 research. Re-check after Phase 1 design._
 
 ### Principle I: TypeScript-First Development ✅ PASS
+
 - All code will be TypeScript with `strict: true`
 - No `any` types unless documented
 - Shared types in `lib/types/`
 - **Compliance**: Feature design uses TypeScript throughout, validates external API responses with Zod
 
 ### Principle II: Simplicity & No Over-Engineering ✅ PASS
+
 - Single repo, single Fastify app, no database for Phase 1
 - NO microservices, NO unnecessary frameworks
 - Plain functions for domain logic
 - **Compliance**: Phase 1 is intentionally minimal - stateless aggregation with no premature abstractions
 
 ### Principle III: Fastify Server Architecture ✅ PASS
+
 - Backend MUST be Fastify (NOT Express, NOT serverless)
 - Long-lived Node.js process in Docker container
 - Route organization under `server/routes/`
@@ -66,19 +73,23 @@ BingeScore Phase 1 delivers an anonymous, stateless web application for searchin
 - **Compliance**: Feature specifies Fastify with 2 routes (`/api/search`, `/api/media/aggregate`), no serverless
 
 ### Principle IV: Pragmatic Testing Strategy ✅ PASS
+
 - Test business logic (rating aggregation, episode merging)
 - Test provider normalization utilities
 - Use Vitest + @testing-library/react sparingly
 - **Compliance**: Specification identifies aggregation logic and provider normalization as must-test areas
 
 ### Principle V: Dev/Prod Parity ✅ PASS
+
 - Local dev uses Vite + Fastify
 - Production uses Docker container
 - Same Node.js version (defined in Dockerfile)
 - **Compliance**: Phase 1 doesn't require database, so no dev/prod database parity concerns yet
 
 ### Technology Stack Compliance ✅ PASS
+
 **Locked-In Choices**:
+
 - ✅ React 18+ (function components + hooks)
 - ✅ TypeScript strict mode
 - ✅ Vite build tool
@@ -88,12 +99,14 @@ BingeScore Phase 1 delivers an anonymous, stateless web application for searchin
 - ✅ Vitest for testing
 
 **Supporting Libraries** (from specification):
+
 - ✅ Framer Motion (animations - optional, non-blocking)
 - ✅ Zod (runtime validation)
 - ✅ react-hot-toast (user feedback)
 - ✅ date-fns (date/time formatting)
 
 ### Architecture Compliance ✅ PASS
+
 - Three-layer architecture: Frontend (React) → Backend (Fastify) → Domain/Data (lib/)
 - Routes handle HTTP only, domain logic in `lib/domain/`, no database layer needed for Phase 1
 - Separation of concerns maintained
@@ -208,9 +221,11 @@ binge-ratings/
 ## Milestones
 
 ### Milestone 1: Project Foundation & Setup ✅
+
 **Goal**: Establish project structure, install dependencies, configure tooling
 
 **Deliverables**:
+
 - Project scaffolded with Vite + Fastify
 - TypeScript configured with strict mode
 - Dependencies installed (React, Fastify, Zod, TanStack Query, Tailwind, etc.)
@@ -225,9 +240,11 @@ binge-ratings/
 ---
 
 ### Milestone 2: Backend API - Search Endpoint
+
 **Goal**: Implement TMDB search integration
 
 **Deliverables**:
+
 - `server/providers/tmdb.ts` with `searchMulti()` implementation
 - `server/routes/search.ts` with `/api/search` endpoint
 - Zod schema validation for TMDB responses
@@ -242,9 +259,11 @@ binge-ratings/
 ---
 
 ### Milestone 3: Backend API - Aggregation Endpoint (Part 1: TMDB + OMDb)
+
 **Goal**: Implement rating aggregation from TMDB and OMDb
 
 **Deliverables**:
+
 - `server/providers/omdb.ts` with IMDb rating fetching
 - `server/routes/media.ts` with `/api/media/aggregate` endpoint (TMDB + OMDb only)
 - `lib/domain/aggregation.ts` with parallel fetching logic (Promise.allSettled)
@@ -258,9 +277,11 @@ binge-ratings/
 ---
 
 ### Milestone 4: Backend API - Trakt Integration & Episode Ratings
+
 **Goal**: Complete aggregation with Trakt, add episode ratings
 
 **Deliverables**:
+
 - `server/providers/trakt.ts` with Trakt ID resolution and rating fetching
 - Episode ratings fetching from TMDB and Trakt
 - `lib/domain/episode-merge.ts` with episode merging logic
@@ -274,9 +295,11 @@ binge-ratings/
 ---
 
 ### Milestone 5: Frontend - Search Flow
+
 **Goal**: Implement search page with autocomplete
 
 **Deliverables**:
+
 - `src/components/layout/Header.tsx` and `Footer.tsx`
 - `src/components/search/SearchBar.tsx` with debounced input
 - `src/components/search/AutocompleteResults.tsx` with floating panel
@@ -293,9 +316,11 @@ binge-ratings/
 ---
 
 ### Milestone 6: Frontend - Media Detail Page
+
 **Goal**: Display aggregated ratings and episode data
 
 **Deliverables**:
+
 - `src/components/media/MediaDetailHeader.tsx` (poster, title, overview)
 - `src/components/media/OverallRatingsPanel.tsx`
 - `src/components/media/RatingCard.tsx` (individual source ratings)
@@ -313,9 +338,11 @@ binge-ratings/
 ---
 
 ### Milestone 7: Styling & UI Polish
+
 **Goal**: Apply design system, ensure light/dark mode, accessibility
 
 **Deliverables**:
+
 - Tailwind CSS v4 configuration
 - Light/dark mode support with semantic colors
 - Lucide icons integrated throughout
@@ -330,9 +357,11 @@ binge-ratings/
 ---
 
 ### Milestone 8: Testing & Error Handling
+
 **Goal**: Write tests for critical logic, ensure robust error handling
 
 **Deliverables**:
+
 - `tests/domain/aggregation.test.ts` (rating aggregation logic)
 - `tests/domain/episode-merge.test.ts` (episode merging logic)
 - `tests/integration/search.test.ts` (Fastify .inject() test)
@@ -347,9 +376,11 @@ binge-ratings/
 ---
 
 ### Milestone 9: Final Integration & Documentation
+
 **Goal**: End-to-end testing, polish, documentation
 
 **Deliverables**:
+
 - Full user flow tested (search → select → view ratings)
 - Performance validated against success criteria (SC-002, SC-003, SC-004)
 - README updated with setup instructions
@@ -369,6 +400,7 @@ binge-ratings/
 ## Dependencies & Critical Path
 
 ### Critical Path
+
 ```
 Phase 0 (Setup)
   ↓
@@ -406,6 +438,7 @@ Phase 7 (Testing) → Phase 8 (Final Integration)
 **Risk**: TMDB, OMDb, or Trakt may impose rate limits
 
 **Mitigation**:
+
 - Use generous rate limits in Phase 1 (TMDB: 40 req/10s, OMDb: 1,000/day, Trakt: 1,000/5min)
 - Implement graceful degradation (FR-016a: display error, allow retry)
 - Monitor API usage during testing
@@ -420,6 +453,7 @@ Phase 7 (Testing) → Phase 8 (Final Integration)
 **Risk**: TMDB, OMDb, Trakt may return unexpected response formats or missing data
 
 **Mitigation**:
+
 - Use Zod for runtime validation of all API responses
 - Fail fast with clear error messages
 - Handle null/undefined gracefully in domain logic
@@ -434,6 +468,7 @@ Phase 7 (Testing) → Phase 8 (Final Integration)
 **Risk**: Frontend may fail to call backend due to CORS errors
 
 **Mitigation**:
+
 - Configure CORS early (Milestone 1)
 - Test API calls from frontend as soon as backend is ready
 - Use environment variable for CORS_ORIGIN to support different environments
@@ -447,6 +482,7 @@ Phase 7 (Testing) → Phase 8 (Final Integration)
 **Risk**: API calls may take longer than specified (SC-002: <2s, SC-003: <5s, SC-004: <8s)
 
 **Mitigation**:
+
 - Use parallel fetching with Promise.allSettled (research decision)
 - Test with real API calls during development
 - Use browser DevTools Network tab to measure latency
@@ -461,6 +497,7 @@ Phase 7 (Testing) → Phase 8 (Final Integration)
 **Risk**: TMDB or Trakt may have incomplete episode data (missing episodes, mismatched season numbers)
 
 **Mitigation**:
+
 - Episode merge logic handles missing data (display "N/A" for null scores)
 - Test with multiple TV series (popular and obscure)
 - Document known limitations in user-facing messages
@@ -474,6 +511,7 @@ Phase 7 (Testing) → Phase 8 (Final Integration)
 **Risk**: Path aliases, multiple tsconfig files may cause import issues
 
 **Mitigation**:
+
 - Set up path aliases early (Milestone 1)
 - Test imports across all layers (frontend, backend, shared lib)
 - Use absolute imports consistently
@@ -487,6 +525,7 @@ Phase 7 (Testing) → Phase 8 (Final Integration)
 **Risk**: Tailwind dark mode may require refactoring all components
 
 **Mitigation**:
+
 - Use Tailwind dark mode from the start (Milestone 7)
 - Use semantic color classes (e.g., `bg-gray-100 dark:bg-gray-900`)
 - Test both modes frequently
@@ -500,6 +539,7 @@ Phase 7 (Testing) → Phase 8 (Final Integration)
 **Risk**: Writing comprehensive tests may consume more time than estimated
 
 **Mitigation**:
+
 - Follow pragmatic testing strategy from constitution (Principle IV)
 - Focus on business logic tests only (aggregation, episode merge)
 - Skip UI snapshot tests in Phase 1

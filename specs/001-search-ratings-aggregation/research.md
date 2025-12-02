@@ -17,12 +17,14 @@ This document consolidates research findings for integrating with TMDB, OMDb, an
 **What was chosen**: Implement a provider abstraction layer with separate modules for each external API (TMDB, OMDb, Trakt) under `server/providers/`
 
 **Rationale**:
+
 - Each API has different authentication mechanisms, rate limits, and response formats
 - Provider modules encapsulate API-specific logic and normalize responses to internal domain types
 - Enables independent testing with mocked providers
 - Makes it easy to swap providers or add new ones without touching business logic
 
 **Implementation Pattern**:
+
 ```typescript
 // server/providers/tmdb.ts
 export interface TmdbProvider {
@@ -39,6 +41,7 @@ export function createTmdbProvider(apiKey: string): TmdbProvider {
 ```
 
 **Alternatives considered**:
+
 - **Direct API calls in routes**: Rejected because it couples HTTP logic with external API specifics, making testing harder
 - **Single unified provider class**: Rejected because APIs are too different (authentication, endpoints, response formats)
 - **External library (e.g., tmdb-js)**: Rejected to maintain full control over request/response handling and TypeScript types
@@ -52,12 +55,14 @@ export function createTmdbProvider(apiKey: string): TmdbProvider {
 **Decision**: Use TMDB API v3 with Bearer Token authentication
 
 **Details**:
+
 - API Key stored in environment variable `TMDB_API_KEY`
 - Base URL: `https://api.themoviedb.org/3`
 - Rate Limit: 40 requests per 10 seconds (generous for Phase 1)
 - Authentication: Include API key in query string OR use Authorization header
 
 **Example Request**:
+
 ```
 GET https://api.themoviedb.org/3/search/multi?query=breaking+bad&api_key={key}
 ```
@@ -86,11 +91,13 @@ GET https://api.themoviedb.org/3/search/multi?query=breaking+bad&api_key={key}
 **Decision**: Use Zod schemas to validate and transform TMDB responses
 
 **Rationale**:
+
 - TMDB API can return inconsistent data (missing fields, nulls)
 - Zod provides runtime validation + TypeScript type inference
 - Fail fast on unexpected API changes
 
 **Example Schema**:
+
 ```typescript
 import { z } from 'zod';
 
@@ -119,6 +126,7 @@ export const TmdbSearchResponseSchema = z.object({
 **Decision**: Use OMDb API with API Key parameter
 
 **Details**:
+
 - API Key stored in environment variable `OMDB_API_KEY`
 - Base URL: `http://www.omdbapi.com/`
 - Rate Limit: 1,000 requests per day (free tier) - sufficient for Phase 1
@@ -127,15 +135,18 @@ export const TmdbSearchResponseSchema = z.object({
 ### Key Endpoint for Phase 1
 
 **Get by IMDb ID**: `/?i={imdb_id}&apikey={key}`
+
 - Requires IMDb ID from TMDB external_ids
 - Returns: IMDb rating (imdbRating), vote count (imdbVotes)
 
 **Example Request**:
+
 ```
 GET http://www.omdbapi.com/?i=tt0903747&apikey={key}
 ```
 
 **Response Format**:
+
 ```json
 {
   "Title": "Breaking Bad",
@@ -150,6 +161,7 @@ GET http://www.omdbapi.com/?i=tt0903747&apikey={key}
 **Decision**: Graceful degradation when OMDb is unavailable
 
 **Rationale**:
+
 - OMDb might fail (rate limits, downtime, invalid IMDb ID)
 - Specification requires displaying ratings from at least 2 out of 3 sources 90% of the time
 - Return null for OMDb rating and continue with TMDB + Trakt
@@ -163,6 +175,7 @@ GET http://www.omdbapi.com/?i=tt0903747&apikey={key}
 **Decision**: Use Trakt API v2 with Client ID authentication (no OAuth for Phase 1)
 
 **Details**:
+
 - Client ID stored in environment variable `TRAKT_CLIENT_ID`
 - Base URL: `https://api.trakt.tv`
 - Rate Limit: 1,000 requests per 5 minutes
@@ -190,6 +203,7 @@ GET http://www.omdbapi.com/?i=tt0903747&apikey={key}
 **Decision**: Implement two-step lookup (TMDB ID → Trakt ID → ratings)
 
 **Rationale**:
+
 - Trakt requires its own IDs for most endpoints
 - Search endpoint can resolve external IDs (TMDB, IMDb) to Trakt IDs
 - Cache Trakt ID resolution in-memory for the request lifecycle (no persistence in Phase 1)
@@ -203,6 +217,7 @@ GET http://www.omdbapi.com/?i=tt0903747&apikey={key}
 **What was chosen**: Fetch ratings from all providers in parallel, handle partial failures
 
 **Implementation Pattern**:
+
 ```typescript
 export async function aggregateRatings(
   tmdbId: number,
@@ -226,11 +241,13 @@ export async function aggregateRatings(
 ```
 
 **Rationale**:
+
 - Promise.allSettled doesn't fail if one provider fails
 - Meets requirement SC-006: "at least 2 out of 3 sources for 90% of requests"
 - Faster than sequential fetching
 
 **Alternatives considered**:
+
 - **Sequential fetching**: Rejected for performance (would add 5-10 seconds latency)
 - **Promise.all**: Rejected because one failure would fail entire request
 - **Retry logic**: Deferred to future phase (adds complexity, Phase 1 is stateless)
@@ -244,6 +261,7 @@ export async function aggregateRatings(
 **What was chosen**: Create unified data structure with side-by-side TMDB and Trakt scores
 
 **Implementation Pattern**:
+
 ```typescript
 export function mergeEpisodeRatings(
   tmdbEpisodes: TmdbEpisode[],
@@ -256,6 +274,7 @@ export function mergeEpisodeRatings(
 ```
 
 **Data Structure**:
+
 ```typescript
 export interface EpisodeRatingEntry {
   seasonNumber: number;
@@ -267,11 +286,13 @@ export interface EpisodeRatingEntry {
 ```
 
 **Edge Cases Handled**:
+
 - Missing episodes in one provider (display as null)
 - Episode count mismatch between providers
 - Special episodes (season 0) - included if present
 
 **Alternatives considered**:
+
 - **Average the scores**: Rejected because spec requires raw data display (FR-015)
 - **Separate tables for each provider**: Rejected because harder to compare side-by-side
 
@@ -284,17 +305,20 @@ export interface EpisodeRatingEntry {
 **What was chosen**: Use react-hot-toast for transient error messages
 
 **Use Cases**:
+
 - API rate limit exceeded (FR-016a): "Rate limit reached. Please try again in a moment."
 - Provider unavailable: "Unable to fetch ratings from {provider}. Showing available data."
 - No results: "No titles found matching your search."
 - Network timeout: "Request timed out. Please check your connection."
 
 **Rationale**:
+
 - Non-intrusive (toast slides in from corner)
 - Auto-dismisses after 3-5 seconds
 - Consistent with UI specification requirement for "toast-style notifications"
 
 **Configuration**:
+
 ```typescript
 import toast from 'react-hot-toast';
 
@@ -319,12 +343,14 @@ toast.warning('Some ratings unavailable. Showing available data.', {
 **What was chosen**: TanStack Query (formerly React Query) for API calls
 
 **Rationale**:
+
 - Built-in loading/error states
 - Automatic request deduplication
 - Stale-while-revalidate caching (configurable)
 - Perfect for stateless API integration
 
 **Implementation Pattern**:
+
 ```typescript
 // hooks/useSearch.ts
 import { useQuery } from '@tanstack/react-query';
@@ -332,7 +358,7 @@ import { useQuery } from '@tanstack/react-query';
 export function useSearch(query: string) {
   return useQuery({
     queryKey: ['search', query],
-    queryFn: () => fetch(`/api/search?q=${query}`).then(r => r.json()),
+    queryFn: () => fetch(`/api/search?q=${query}`).then((r) => r.json()),
     enabled: query.length >= 2, // FR-001a: only search after 2+ characters
     staleTime: 5 * 60 * 1000, // 5 minutes (reasonable for search results)
   });
@@ -340,6 +366,7 @@ export function useSearch(query: string) {
 ```
 
 **Alternatives considered**:
+
 - **Plain fetch with useState**: Rejected because need to handle loading/error/caching manually
 - **SWR**: Considered, but TanStack Query has better TypeScript support and more features
 - **RTK Query**: Rejected because don't need Redux for Phase 1
@@ -353,6 +380,7 @@ export function useSearch(query: string) {
 **What was chosen**: Custom React hook with useEffect + setTimeout
 
 **Implementation Pattern**:
+
 ```typescript
 export function useDebounce<T>(value: T, delay: number): T {
   const [debouncedValue, setDebouncedValue] = useState(value);
@@ -375,11 +403,13 @@ const { data, isLoading } = useSearch(debouncedQuery);
 ```
 
 **Rationale**:
+
 - Reduces API calls (user types fast, wait until they pause)
 - Simple implementation, no external dependency
 - 300ms is industry standard for search autocomplete
 
 **Alternatives considered**:
+
 - **lodash.debounce**: Considered, but adds dependency and useEffect approach is cleaner with React
 - **No debounce**: Rejected because would hammer TMDB API on every keystroke
 
@@ -390,6 +420,7 @@ const { data, isLoading } = useSearch(debouncedQuery);
 ### Decision: Use .env file with dotenv for local dev, platform env vars for prod
 
 **Required Environment Variables**:
+
 ```bash
 # Server
 PORT=4000
@@ -405,6 +436,7 @@ CORS_ORIGIN=http://localhost:5173
 ```
 
 **Configuration Loading**:
+
 ```typescript
 // server/config.ts
 import { z } from 'zod';
@@ -429,6 +461,7 @@ export const config = ConfigSchema.parse({
 ```
 
 **Rationale**:
+
 - Zod validation catches missing environment variables at startup
 - Type-safe config object prevents runtime errors
 - Single source of truth for configuration
@@ -459,11 +492,13 @@ export const config = ConfigSchema.parse({
    - 1-2 key components with @testing-library/react (e.g., SearchBar with loading states)
 
 **Testing Tools**:
+
 - Vitest for test runner
 - @testing-library/react for React component tests (minimal)
 - Fastify .inject() for API route testing
 
 **Example Test**:
+
 ```typescript
 // tests/domain/aggregation.test.ts
 import { describe, it, expect } from 'vitest';
@@ -495,12 +530,14 @@ describe('aggregateRatings', () => {
 **What was chosen**: Framer Motion for hover states, transitions, and autocomplete animations
 
 **Use Cases**:
+
 - Search autocomplete dropdown: slide down animation
 - Rating cards: hover scale (1.02x) with smooth transition
 - Loading spinner: gentle rotation
 - Season selector pills: active state transition
 
 **Implementation Pattern**:
+
 ```typescript
 import { motion } from 'framer-motion';
 
@@ -521,11 +558,13 @@ export function AutocompleteResults({ results }) {
 ```
 
 **Rationale**:
+
 - Specification requires animations be "optional and non-blocking"
 - Framer Motion uses CSS transforms (GPU-accelerated, performant)
 - Declarative API integrates cleanly with React
 
 **Alternatives considered**:
+
 - **CSS transitions only**: Considered, but Framer Motion provides better animation orchestration for complex sequences
 - **React Spring**: Rejected because Framer Motion has simpler API for basic use cases
 
@@ -538,10 +577,12 @@ export function AutocompleteResults({ results }) {
 **What was chosen**: date-fns library for formatting release years and dates
 
 **Use Cases**:
+
 - Format release year: `format(new Date(releaseDate), 'yyyy')`
 - Display "Released in 2008" from TMDB date string
 
 **Example**:
+
 ```typescript
 import { format, parseISO } from 'date-fns';
 
@@ -556,6 +597,7 @@ export function formatReleaseYear(dateString: string | undefined): string {
 ```
 
 **Rationale**:
+
 - Consistent date formatting across the application
 - Avoids ad-hoc string manipulation
 - Locale-aware if needed in future
@@ -567,6 +609,7 @@ export function formatReleaseYear(dateString: string | undefined): string {
 ### Decision: Configure CORS plugin in Fastify for local dev
 
 **Configuration**:
+
 ```typescript
 // server/plugins/cors.ts
 import { FastifyPluginAsync } from 'fastify';
@@ -584,6 +627,7 @@ export default corsPlugin;
 ```
 
 **Rationale**:
+
 - Frontend (localhost:5173) needs to call backend (localhost:4000)
 - CORS plugin handles preflight requests automatically
 
@@ -591,22 +635,22 @@ export default corsPlugin;
 
 ## Summary of Key Decisions
 
-| Area | Decision | Rationale |
-|------|----------|-----------|
-| Provider Abstraction | Separate modules per API | Encapsulation, testability, swappability |
-| TMDB API | v3 with Bearer auth | Generous rate limits, complete metadata |
-| OMDb API | Free tier with IMDb ID lookup | Simple IMDb rating integration |
-| Trakt API | v2 with Client ID (no OAuth) | Episode ratings, alternative rating source |
-| Aggregation | Parallel with Promise.allSettled | Performance + graceful degradation |
-| Episode Merge | Side-by-side TMDB + Trakt scores | Raw data display per spec (FR-015) |
-| Error Handling | react-hot-toast notifications | Non-intrusive, auto-dismiss |
-| Data Fetching | TanStack Query | Loading states, caching, deduplication |
-| Search Debounce | Custom hook with 300ms delay | Reduces API calls, industry standard |
-| Validation | Zod for API responses + config | Runtime safety + TypeScript types |
-| Testing | Domain logic + provider normalization | Pragmatic strategy per constitution |
-| Animations | Framer Motion (optional) | Performant, declarative, React-friendly |
-| Date Formatting | date-fns | Consistent, locale-aware |
-| CORS | @fastify/cors plugin | Local dev frontend ↔ backend communication |
+| Area                 | Decision                              | Rationale                                  |
+| -------------------- | ------------------------------------- | ------------------------------------------ |
+| Provider Abstraction | Separate modules per API              | Encapsulation, testability, swappability   |
+| TMDB API             | v3 with Bearer auth                   | Generous rate limits, complete metadata    |
+| OMDb API             | Free tier with IMDb ID lookup         | Simple IMDb rating integration             |
+| Trakt API            | v2 with Client ID (no OAuth)          | Episode ratings, alternative rating source |
+| Aggregation          | Parallel with Promise.allSettled      | Performance + graceful degradation         |
+| Episode Merge        | Side-by-side TMDB + Trakt scores      | Raw data display per spec (FR-015)         |
+| Error Handling       | react-hot-toast notifications         | Non-intrusive, auto-dismiss                |
+| Data Fetching        | TanStack Query                        | Loading states, caching, deduplication     |
+| Search Debounce      | Custom hook with 300ms delay          | Reduces API calls, industry standard       |
+| Validation           | Zod for API responses + config        | Runtime safety + TypeScript types          |
+| Testing              | Domain logic + provider normalization | Pragmatic strategy per constitution        |
+| Animations           | Framer Motion (optional)              | Performant, declarative, React-friendly    |
+| Date Formatting      | date-fns                              | Consistent, locale-aware                   |
+| CORS                 | @fastify/cors plugin                  | Local dev frontend ↔ backend communication |
 
 ---
 

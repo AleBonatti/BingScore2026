@@ -20,16 +20,12 @@ export function createTraktProvider(clientId: string): TraktProvider {
     'trakt-api-key': clientId,
   };
 
-  const resolveTraktId = async (
-    tmdbId: number,
-    mediaType: MediaType
-  ): Promise<string | null> => {
+  const resolveTraktId = async (tmdbId: number, mediaType: MediaType): Promise<string | null> => {
     try {
       const type = mediaType === 'movie' ? 'movie' : 'show';
-      const response = await fetch(
-        `${TRAKT_BASE_URL}/search/tmdb/${tmdbId}?type=${type}`,
-        { headers }
-      );
+      const response = await fetch(`${TRAKT_BASE_URL}/search/tmdb/${tmdbId}?type=${type}`, {
+        headers,
+      });
 
       if (!response.ok) {
         throw new Error(`Trakt API error: ${response.statusText}`);

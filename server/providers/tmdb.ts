@@ -3,7 +3,12 @@
  * API client for The Movie Database
  */
 
-import type { SearchResult, MediaType, OverallRating, EpisodeRatingEntry } from '@/lib/types/domain.js';
+import type {
+  SearchResult,
+  MediaType,
+  OverallRating,
+  EpisodeRatingEntry,
+} from '@/lib/types/domain.js';
 import type { TmdbExternalIds } from '@/lib/types/providers.js';
 import { formatReleaseYear } from '@/lib/utils/format.js';
 
@@ -60,9 +65,7 @@ export function createTmdbProvider(apiKey: string): TmdbProvider {
   const getMediaDetails = async (tmdbId: number, mediaType: MediaType): Promise<any> => {
     try {
       const endpoint = mediaType === 'movie' ? 'movie' : 'tv';
-      const response = await fetch(
-        `${TMDB_BASE_URL}/${endpoint}/${tmdbId}?api_key=${apiKey}`
-      );
+      const response = await fetch(`${TMDB_BASE_URL}/${endpoint}/${tmdbId}?api_key=${apiKey}`);
 
       if (!response.ok) {
         throw new Error(`TMDB API error: ${response.statusText}`);
@@ -75,10 +78,7 @@ export function createTmdbProvider(apiKey: string): TmdbProvider {
     }
   };
 
-  const getExternalIds = async (
-    tmdbId: number,
-    mediaType: MediaType
-  ): Promise<TmdbExternalIds> => {
+  const getExternalIds = async (tmdbId: number, mediaType: MediaType): Promise<TmdbExternalIds> => {
     try {
       const endpoint = mediaType === 'movie' ? 'movie' : 'tv';
       const response = await fetch(
@@ -96,10 +96,7 @@ export function createTmdbProvider(apiKey: string): TmdbProvider {
     }
   };
 
-  const getOverallRating = async (
-    tmdbId: number,
-    mediaType: MediaType
-  ): Promise<OverallRating> => {
+  const getOverallRating = async (tmdbId: number, mediaType: MediaType): Promise<OverallRating> => {
     try {
       const details = await getMediaDetails(tmdbId, mediaType);
       return {

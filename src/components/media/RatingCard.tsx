@@ -46,7 +46,7 @@ export default function RatingCard({ rating }: RatingCardProps) {
             <span
               className={`text-4xl font-bold bg-gradient-to-br ${sourceColors[rating.source]} bg-clip-text text-transparent`}
             >
-              {rating.score.toFixed(1)}
+              {rating.score?.toFixed(1) ?? '—'}
             </span>
             <span className="text-gray-500 dark:text-gray-400">/ 10</span>
           </div>

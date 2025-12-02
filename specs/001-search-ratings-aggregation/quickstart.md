@@ -11,11 +11,13 @@
 BingeScore Phase 1 is a full-stack TypeScript web application that searches for movies/TV series and aggregates ratings from multiple sources (TMDB, OMDb, Trakt). This quickstart guide will get you running locally in under 10 minutes.
 
 **Tech Stack**:
+
 - **Frontend**: React 18 + Vite + Tailwind CSS v4 + TanStack Query
 - **Backend**: Fastify + TypeScript
 - **External APIs**: TMDB, OMDb, Trakt
 
 **Prerequisites**:
+
 - Node.js 18+ (check with `node --version`)
 - npm or yarn
 - Text editor (VS Code recommended)
@@ -43,6 +45,7 @@ npm install
 You'll need API keys from three external services:
 
 ### TMDB API Key
+
 1. Create account at https://www.themoviedb.org/
 2. Go to Settings → API → Request API Key
 3. Choose "Developer" option
@@ -50,6 +53,7 @@ You'll need API keys from three external services:
 5. Copy your **API Key (v3 auth)**
 
 ### OMDb API Key
+
 1. Go to https://www.omdbapi.com/apikey.aspx
 2. Select "FREE! (1,000 daily limit)"
 3. Enter your email
@@ -57,6 +61,7 @@ You'll need API keys from three external services:
 5. Activate the key by clicking the link in the email
 
 ### Trakt Client ID
+
 1. Create account at https://trakt.tv/
 2. Go to Settings → Your API Apps → New Application
 3. Fill out form:
@@ -80,6 +85,7 @@ nano .env  # or use your preferred editor
 ```
 
 **.env file contents**:
+
 ```bash
 # Server Configuration
 PORT=4000
@@ -105,17 +111,21 @@ CORS_ORIGIN=http://localhost:5173
 Open **two terminal windows** (or use tmux/screen):
 
 **Terminal 1 - Frontend (Vite)**:
+
 ```bash
 npm run dev
 ```
+
 - Starts Vite dev server on http://localhost:5173
 - Hot module replacement enabled
 - Frontend will auto-reload on file changes
 
 **Terminal 2 - Backend (Fastify)**:
+
 ```bash
 npm run server:dev
 ```
+
 - Starts Fastify server on http://localhost:4000
 - Auto-restarts on file changes (using `tsx watch`)
 - API endpoints available at `/api/*`
@@ -127,20 +137,26 @@ npm run server:dev
 ## 5. Verify Setup
 
 ### Backend Health Check
+
 Open http://localhost:4000/health in your browser or run:
+
 ```bash
 curl http://localhost:4000/health
 ```
+
 Expected response:
+
 ```json
-{"status":"ok"}
+{ "status": "ok" }
 ```
 
 ### Frontend Access
+
 Open http://localhost:5173 in your browser.
 You should see the BingeScore homepage with a search bar.
 
 ### Test Search
+
 1. Type "breaking bad" in the search box
 2. Wait 300ms (debounce delay)
 3. Autocomplete results should appear
@@ -184,6 +200,7 @@ binge-ratings/
 ```
 
 **Key Files to Know**:
+
 - `server/routes/search.ts`: Handles `/api/search` endpoint
 - `server/routes/media.ts`: Handles `/api/media/aggregate` endpoint
 - `server/providers/tmdb.ts`: TMDB API integration
@@ -198,16 +215,19 @@ binge-ratings/
 ### Making Changes
 
 **Frontend Changes** (React components, styles):
+
 1. Edit files in `src/`
 2. Save → Vite auto-reloads
 3. Check browser for changes
 
 **Backend Changes** (API routes, providers):
+
 1. Edit files in `server/` or `lib/`
 2. Save → Fastify restarts automatically
 3. Test API with curl or frontend
 
 **Shared Code Changes** (types, utilities):
+
 1. Edit files in `lib/`
 2. Both frontend and backend can import from `lib/`
 3. Path alias: `@/lib/...`
@@ -251,6 +271,7 @@ npm run typecheck
 5. Test with `fastify.inject()` in `tests/integration/`
 
 **Example**:
+
 ```typescript
 // server/routes/recommendations.ts
 import { FastifyPluginAsync } from 'fastify';
@@ -273,6 +294,7 @@ export default recommendationsRoutes;
 4. Add styles with Tailwind classes
 
 **Example**:
+
 ```typescript
 // src/components/media/TrailerPlayer.tsx
 interface TrailerPlayerProps {
@@ -297,15 +319,18 @@ export default function TrailerPlayer({ videoKey, title }: TrailerPlayerProps) {
 ### Debug API Calls
 
 **Backend Logs** (Terminal 2):
+
 - Fastify logs all requests with Pino logger
 - Check for error stack traces
 
 **Frontend Network Tab**:
+
 - Open browser DevTools → Network tab
 - Filter by "Fetch/XHR"
 - Inspect request/response payloads
 
 **Test API Directly**:
+
 ```bash
 # Test search endpoint
 curl "http://localhost:4000/api/search?q=breaking%20bad"
@@ -323,6 +348,7 @@ curl "http://localhost:4000/api/media/aggregate?tmdbId=1396&mediaType=tv"
 **Cause**: Invalid TMDB API key or rate limit exceeded
 
 **Solution**:
+
 1. Check `.env` file has correct `TMDB_API_KEY`
 2. Verify API key works: `curl "https://api.themoviedb.org/3/search/multi?api_key=YOUR_KEY&query=test"`
 3. If rate limited, wait 10 seconds and retry
@@ -332,6 +358,7 @@ curl "http://localhost:4000/api/media/aggregate?tmdbId=1396&mediaType=tv"
 **Cause**: OMDb free tier limit (1,000 requests/day)
 
 **Solution**:
+
 1. Use a different email to get a new free key
 2. Or upgrade to paid tier
 3. System will gracefully degrade and show TMDB + Trakt ratings only
@@ -341,6 +368,7 @@ curl "http://localhost:4000/api/media/aggregate?tmdbId=1396&mediaType=tv"
 **Cause**: CORS not configured correctly
 
 **Solution**:
+
 1. Check `.env` file has `CORS_ORIGIN=http://localhost:5173`
 2. Restart backend server (Terminal 2)
 3. Clear browser cache and reload
@@ -350,6 +378,7 @@ curl "http://localhost:4000/api/media/aggregate?tmdbId=1396&mediaType=tv"
 **Cause**: Port 4000 already in use
 
 **Solution**:
+
 ```bash
 # Find process using port 4000
 lsof -i :4000
@@ -366,6 +395,7 @@ PORT=4001
 **Cause**: TypeScript server out of sync
 
 **Solution** (VS Code):
+
 1. Press `Cmd+Shift+P` (Mac) or `Ctrl+Shift+P` (Windows/Linux)
 2. Type "TypeScript: Restart TS Server"
 3. Press Enter
@@ -375,11 +405,13 @@ PORT=4001
 ## 10. Next Steps
 
 ### Learn the Codebase
+
 1. Read [research.md](research.md) - API integration patterns and decisions
 2. Read [data-model.md](data-model.md) - Domain entities and types
 3. Review [contracts/openapi.yaml](contracts/openapi.yaml) - API specification
 
 ### Start Contributing
+
 1. Pick a task from `tasks.md` (generated by `/speckit.tasks` command)
 2. Create a feature branch: `git checkout -b feature/your-feature-name`
 3. Make changes, test locally
@@ -387,6 +419,7 @@ PORT=4001
 5. Push and create pull request
 
 ### Run Tests Before Committing
+
 ```bash
 npm run typecheck  # Must pass
 npm test           # Must pass
@@ -394,6 +427,7 @@ npm run lint       # Must pass
 ```
 
 ### Phase 2 Features (Future)
+
 - User authentication (JWT in HTTP-only cookies)
 - Database persistence (PostgreSQL + Drizzle ORM)
 - Favorites and watchlist
@@ -404,16 +438,16 @@ npm run lint       # Must pass
 
 ## 11. Useful Commands Reference
 
-| Command | Description |
-|---------|-------------|
-| `npm run dev` | Start Vite frontend dev server |
-| `npm run server:dev` | Start Fastify backend dev server |
-| `npm test` | Run all tests |
-| `npm run test:watch` | Run tests in watch mode |
-| `npm run lint` | Lint code with ESLint |
-| `npm run format` | Format code with Prettier |
-| `npm run typecheck` | Check TypeScript types |
-| `npm run build` | Build production bundle (frontend) |
+| Command              | Description                        |
+| -------------------- | ---------------------------------- |
+| `npm run dev`        | Start Vite frontend dev server     |
+| `npm run server:dev` | Start Fastify backend dev server   |
+| `npm test`           | Run all tests                      |
+| `npm run test:watch` | Run tests in watch mode            |
+| `npm run lint`       | Lint code with ESLint              |
+| `npm run format`     | Format code with Prettier          |
+| `npm run typecheck`  | Check TypeScript types             |
+| `npm run build`      | Build production bundle (frontend) |
 
 ---
 

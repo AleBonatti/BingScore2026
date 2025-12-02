@@ -11,9 +11,7 @@ export function useMediaAggregation(tmdbId: number, mediaType: MediaType) {
   return useQuery({
     queryKey: ['media-aggregate', tmdbId, mediaType],
     queryFn: async (): Promise<AggregateResponse> => {
-      const response = await fetch(
-        `/api/media/aggregate?tmdbId=${tmdbId}&mediaType=${mediaType}`
-      );
+      const response = await fetch(`/api/media/aggregate?tmdbId=${tmdbId}&mediaType=${mediaType}`);
       if (!response.ok) {
         throw new Error('Failed to fetch aggregated ratings');
       }

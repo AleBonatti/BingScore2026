@@ -65,7 +65,5 @@ export const AggregatedRatingsSchema = z.object({
     imdb: OverallRatingSchema.nullable().optional(),
     trakt: OverallRatingSchema.nullable().optional(),
   }),
-  episodesBySeason: z
-    .record(z.string(), z.array(EpisodeRatingEntrySchema))
-    .optional(),
+  episodesBySeason: z.record(z.string(), z.array(EpisodeRatingEntrySchema)).optional(),
 });

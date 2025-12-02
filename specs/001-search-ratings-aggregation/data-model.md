@@ -31,25 +31,28 @@ export type MediaType = 'movie' | 'tv';
 **Definition**: Represents a single search result from TMDB
 
 **Entity Specification** (from spec.md):
+
 > "Search Result: Represents a single item returned from TMDB search, including TMDB ID, IMDb ID (if available), media type (movie/tv), title, year, overview, and image URLs"
 
 **TypeScript Definition**:
+
 ```typescript
 export interface SearchResult {
-  provider: 'tmdb';           // Source identifier (always TMDB for Phase 1)
-  tmdbId: number;              // TMDB unique identifier
-  imdbId?: string | null;      // IMDb ID (format: "tt1234567"), if available
-  mediaType: MediaType;        // "movie" or "tv"
-  title: string;               // Display title (movie title or TV series name)
-  originalTitle?: string;      // Original title (if different from translated title)
-  year?: number;               // Release year (from release_date or first_air_date)
-  overview?: string;           // Synopsis/description
-  posterUrl?: string | null;   // Poster image URL (TMDB CDN path)
+  provider: 'tmdb'; // Source identifier (always TMDB for Phase 1)
+  tmdbId: number; // TMDB unique identifier
+  imdbId?: string | null; // IMDb ID (format: "tt1234567"), if available
+  mediaType: MediaType; // "movie" or "tv"
+  title: string; // Display title (movie title or TV series name)
+  originalTitle?: string; // Original title (if different from translated title)
+  year?: number; // Release year (from release_date or first_air_date)
+  overview?: string; // Synopsis/description
+  posterUrl?: string | null; // Poster image URL (TMDB CDN path)
   backdropUrl?: string | null; // Backdrop image URL (TMDB CDN path)
 }
 ```
 
 **Validation Rules**:
+
 - `tmdbId`: Required, positive integer
 - `mediaType`: Required, must be "movie" or "tv"
 - `title`: Required, non-empty string
@@ -57,13 +60,18 @@ export interface SearchResult {
 - `posterUrl` / `backdropUrl`: Optional, if present must be valid URL path
 
 **Zod Schema**:
+
 ```typescript
 import { z } from 'zod';
 
 export const SearchResultSchema = z.object({
   provider: z.literal('tmdb'),
   tmdbId: z.number().int().positive(),
-  imdbId: z.string().regex(/^tt\d+$/).nullable().optional(),
+  imdbId: z
+    .string()
+    .regex(/^tt\d+$/)
+    .nullable()
+    .optional(),
   mediaType: z.enum(['movie', 'tv']),
   title: z.string().min(1),
   originalTitle: z.string().optional(),
@@ -77,6 +85,7 @@ export const SearchResultSchema = z.object({
 **State Transitions**: None (immutable data structure)
 
 **Relationships**:
+
 - None (standalone entity)
 
 ---
@@ -86,38 +95,47 @@ export const SearchResultSchema = z.object({
 **Definition**: Cross-platform identifier mapping for a media item
 
 **Entity Specification** (from spec.md):
+
 > "Unified Media Identifier: Represents a media item with IDs from multiple providers (TMDB ID, IMDb ID, Trakt ID) allowing cross-referencing across different rating platforms"
 
 **TypeScript Definition**:
+
 ```typescript
 export interface UnifiedMediaId {
-  mediaType: MediaType;        // "movie" or "tv"
-  tmdbId?: number;             // TMDB ID (always present from search)
-  imdbId?: string;             // IMDb ID (from TMDB external_ids, may be missing)
-  traktId?: string;            // Trakt ID (slug format: "breaking-bad")
+  mediaType: MediaType; // "movie" or "tv"
+  tmdbId?: number; // TMDB ID (always present from search)
+  imdbId?: string; // IMDb ID (from TMDB external_ids, may be missing)
+  traktId?: string; // Trakt ID (slug format: "breaking-bad")
 }
 ```
 
 **Validation Rules**:
+
 - `mediaType`: Required
 - At least one of `tmdbId`, `imdbId`, or `traktId` must be present
 - `imdbId`: If present, must match format "tt\d+" (e.g., "tt0903747")
 - `traktId`: If present, must be non-empty string (Trakt slug format)
 
 **Zod Schema**:
+
 ```typescript
-export const UnifiedMediaIdSchema = z.object({
-  mediaType: z.enum(['movie', 'tv']),
-  tmdbId: z.number().int().positive().optional(),
-  imdbId: z.string().regex(/^tt\d+$/).optional(),
-  traktId: z.string().min(1).optional(),
-}).refine(
-  (data) => data.tmdbId || data.imdbId || data.traktId,
-  { message: 'At least one ID must be present' }
-);
+export const UnifiedMediaIdSchema = z
+  .object({
+    mediaType: z.enum(['movie', 'tv']),
+    tmdbId: z.number().int().positive().optional(),
+    imdbId: z
+      .string()
+      .regex(/^tt\d+$/)
+      .optional(),
+    traktId: z.string().min(1).optional(),
+  })
+  .refine((data) => data.tmdbId || data.imdbId || data.traktId, {
+    message: 'At least one ID must be present',
+  });
 ```
 
 **Relationships**:
+
 - Used as input to provider queries (resolve IDs across platforms)
 - Included in `AggregatedRatings` response
 
@@ -128,28 +146,33 @@ export const UnifiedMediaIdSchema = z.object({
 **Definition**: Aggregated rating from a single source
 
 **Entity Specification** (from spec.md):
+
 > "Overall Rating: Represents aggregated rating information for the entire media item from a single source, including the rating score, number of votes, and source identifier"
 
 **TypeScript Definition**:
+
 ```typescript
 export interface OverallRating {
   source: 'tmdb' | 'imdb' | 'trakt'; // Rating provider
-  score: number | null;               // Rating score (normalized to 0-10 scale)
-  votes?: number | null;              // Number of votes/reviews
+  score: number | null; // Rating score (normalized to 0-10 scale)
+  votes?: number | null; // Number of votes/reviews
 }
 ```
 
 **Validation Rules**:
+
 - `source`: Required, must be one of the three providers
 - `score`: If present (not null), must be 0-10 (normalized scale)
 - `votes`: If present, must be non-negative integer
 
 **Score Normalization**:
+
 - TMDB: 0-10 (native scale) → no conversion
 - IMDb (OMDb): 0-10 (native scale) → no conversion
 - Trakt: 0-10 (native scale) → no conversion
 
 **Zod Schema**:
+
 ```typescript
 export const OverallRatingSchema = z.object({
   source: z.enum(['tmdb', 'imdb', 'trakt']),
@@ -161,6 +184,7 @@ export const OverallRatingSchema = z.object({
 **State Transitions**: None (immutable)
 
 **Relationships**:
+
 - Multiple instances collected in `AggregatedRatings.overall`
 
 ---
@@ -170,20 +194,23 @@ export const OverallRatingSchema = z.object({
 **Definition**: Rating information for a single TV episode
 
 **Entity Specification** (from spec.md):
+
 > "Episode Rating: Represents rating information for a specific episode, including season number, episode number, episode title, and scores from TMDB and Trakt"
 
 **TypeScript Definition**:
+
 ```typescript
 export interface EpisodeRatingEntry {
-  seasonNumber: number;        // Season number (0 for specials)
-  episodeNumber: number;       // Episode number within season
-  title?: string;              // Episode title (from TMDB or Trakt)
-  tmdbScore?: number | null;   // TMDB rating (0-10), null if unavailable
-  traktScore?: number | null;  // Trakt rating (0-10), null if unavailable
+  seasonNumber: number; // Season number (0 for specials)
+  episodeNumber: number; // Episode number within season
+  title?: string; // Episode title (from TMDB or Trakt)
+  tmdbScore?: number | null; // TMDB rating (0-10), null if unavailable
+  traktScore?: number | null; // Trakt rating (0-10), null if unavailable
 }
 ```
 
 **Validation Rules**:
+
 - `seasonNumber`: Required, non-negative integer (0 for specials)
 - `episodeNumber`: Required, positive integer
 - `title`: Optional string
@@ -192,6 +219,7 @@ export interface EpisodeRatingEntry {
 - At least one of `tmdbScore` or `traktScore` should be present (but can both be null if no ratings available)
 
 **Zod Schema**:
+
 ```typescript
 export const EpisodeRatingEntrySchema = z.object({
   seasonNumber: z.number().int().nonnegative(),
@@ -205,6 +233,7 @@ export const EpisodeRatingEntrySchema = z.object({
 **State Transitions**: None (immutable)
 
 **Relationships**:
+
 - Grouped by `seasonNumber` in `AggregatedRatings.episodesBySeason`
 
 ---
@@ -214,29 +243,34 @@ export const EpisodeRatingEntrySchema = z.object({
 **Definition**: Complete rating information for a media item, aggregated from all sources
 
 **Entity Specification** (from spec.md):
+
 > "Aggregated Ratings Response: Represents the complete rating information for a media item, including the unified identifiers, basic metadata (title, year, overview, images), overall ratings from all sources, and episode-by-episode ratings organized by season (for TV series only)"
 
 **TypeScript Definition**:
+
 ```typescript
 export interface AggregatedRatings {
-  ids: UnifiedMediaId;                    // Cross-platform identifiers
-  title: string;                          // Media title
-  year?: number;                          // Release year
-  mediaType: MediaType;                   // "movie" or "tv"
-  overview?: string;                      // Synopsis
-  posterUrl?: string | null;              // Poster image URL
-  overall: {                              // Overall ratings from all sources
+  ids: UnifiedMediaId; // Cross-platform identifiers
+  title: string; // Media title
+  year?: number; // Release year
+  mediaType: MediaType; // "movie" or "tv"
+  overview?: string; // Synopsis
+  posterUrl?: string | null; // Poster image URL
+  overall: {
+    // Overall ratings from all sources
     tmdb?: OverallRating | null;
     imdb?: OverallRating | null;
     trakt?: OverallRating | null;
   };
-  episodesBySeason?: {                    // TV series only: episode ratings by season
+  episodesBySeason?: {
+    // TV series only: episode ratings by season
     [seasonNumber: number]: EpisodeRatingEntry[];
   };
 }
 ```
 
 **Validation Rules**:
+
 - `ids`: Required, must be valid `UnifiedMediaId`
 - `title`: Required, non-empty string
 - `mediaType`: Required
@@ -244,6 +278,7 @@ export interface AggregatedRatings {
 - `episodesBySeason`: Only present for `mediaType === 'tv'`, must be object with integer keys
 
 **Zod Schema**:
+
 ```typescript
 export const AggregatedRatingsSchema = z.object({
   ids: UnifiedMediaIdSchema,
@@ -257,16 +292,19 @@ export const AggregatedRatingsSchema = z.object({
     imdb: OverallRatingSchema.nullable().optional(),
     trakt: OverallRatingSchema.nullable().optional(),
   }),
-  episodesBySeason: z.record(
-    z.string(), // season number as string key (JSON serialization)
-    z.array(EpisodeRatingEntrySchema)
-  ).optional(),
+  episodesBySeason: z
+    .record(
+      z.string(), // season number as string key (JSON serialization)
+      z.array(EpisodeRatingEntrySchema)
+    )
+    .optional(),
 });
 ```
 
 **State Transitions**: None (immutable, returned as API response)
 
 **Relationships**:
+
 - Composes `UnifiedMediaId`, `OverallRating[]`, and `EpisodeRatingEntry[]`
 - Top-level response entity for `/api/media/aggregate` endpoint
 
@@ -279,23 +317,25 @@ export const AggregatedRatingsSchema = z.object({
 **Purpose**: Internal types for TMDB API responses (not exposed in public API)
 
 **TmdbSearchResponse**:
+
 ```typescript
 export interface TmdbSearchResponse {
   results: Array<{
     id: number;
     media_type: 'movie' | 'tv' | 'person'; // Filter out 'person'
-    title?: string;                         // Movie title
-    name?: string;                          // TV series name
+    title?: string; // Movie title
+    name?: string; // TV series name
     overview?: string;
     poster_path?: string | null;
     backdrop_path?: string | null;
-    release_date?: string;                  // ISO date (movies)
-    first_air_date?: string;                // ISO date (TV)
+    release_date?: string; // ISO date (movies)
+    first_air_date?: string; // ISO date (TV)
   }>;
 }
 ```
 
 **TmdbExternalIds**:
+
 ```typescript
 export interface TmdbExternalIds {
   imdb_id?: string | null;
@@ -305,6 +345,7 @@ export interface TmdbExternalIds {
 ```
 
 **TmdbEpisode**:
+
 ```typescript
 export interface TmdbEpisode {
   season_number: number;
@@ -323,14 +364,15 @@ export interface TmdbEpisode {
 **Purpose**: Internal types for OMDb API responses
 
 **OmdbResponse**:
+
 ```typescript
 export interface OmdbResponse {
   Title: string;
   Year: string;
   imdbRating: string; // String format: "9.5"
-  imdbVotes: string;  // String format: "2,000,000" (with commas)
+  imdbVotes: string; // String format: "2,000,000" (with commas)
   Response: 'True' | 'False';
-  Error?: string;     // Present if Response === 'False'
+  Error?: string; // Present if Response === 'False'
 }
 ```
 
@@ -343,6 +385,7 @@ export interface OmdbResponse {
 **Purpose**: Internal types for Trakt API responses
 
 **TraktSearchResult**:
+
 ```typescript
 export interface TraktSearchResult {
   type: 'movie' | 'show';
@@ -353,15 +396,17 @@ export interface TraktSearchResult {
 ```
 
 **TraktRating**:
+
 ```typescript
 export interface TraktRating {
-  rating: number;     // 0-10 scale
+  rating: number; // 0-10 scale
   votes: number;
   distribution: Record<string, number>; // Not used in Phase 1
 }
 ```
 
 **TraktEpisode**:
+
 ```typescript
 export interface TraktEpisode {
   season: number;
@@ -381,6 +426,7 @@ export interface TraktEpisode {
 ### 3.1. GET /api/search
 
 **Request Query Parameters**:
+
 ```typescript
 export interface SearchQueryParams {
   q: string; // Search query (minimum 2 characters per FR-001a)
@@ -388,11 +434,13 @@ export interface SearchQueryParams {
 ```
 
 **Response**:
+
 ```typescript
 export type SearchResponse = SearchResult[];
 ```
 
 **Error Response**:
+
 ```typescript
 export interface ErrorResponse {
   data: null;
@@ -408,14 +456,16 @@ export interface ErrorResponse {
 ### 3.2. GET /api/media/aggregate
 
 **Request Query Parameters**:
+
 ```typescript
 export interface AggregateQueryParams {
-  tmdbId: number;      // TMDB ID from search result
+  tmdbId: number; // TMDB ID from search result
   mediaType: MediaType; // "movie" or "tv"
 }
 ```
 
 **Response**:
+
 ```typescript
 export type AggregateResponse = AggregatedRatings;
 ```
@@ -530,13 +580,13 @@ Return to Frontend
 
 ## 6. Validation Summary
 
-| Entity | Required Fields | Optional Fields | Validation Constraints |
-|--------|----------------|-----------------|------------------------|
-| SearchResult | tmdbId, mediaType, title | imdbId, year, overview, posterUrl, backdropUrl | tmdbId > 0, mediaType in ['movie', 'tv'] |
-| UnifiedMediaId | mediaType | tmdbId, imdbId, traktId | At least one ID present |
-| OverallRating | source | score, votes | score 0-10, votes ≥ 0 |
-| EpisodeRatingEntry | seasonNumber, episodeNumber | title, tmdbScore, traktScore | seasonNumber ≥ 0, episodeNumber > 0, scores 0-10 |
-| AggregatedRatings | ids, title, mediaType, overall | year, overview, posterUrl, episodesBySeason | At least one overall rating source attempted |
+| Entity             | Required Fields                | Optional Fields                                | Validation Constraints                           |
+| ------------------ | ------------------------------ | ---------------------------------------------- | ------------------------------------------------ |
+| SearchResult       | tmdbId, mediaType, title       | imdbId, year, overview, posterUrl, backdropUrl | tmdbId > 0, mediaType in ['movie', 'tv']         |
+| UnifiedMediaId     | mediaType                      | tmdbId, imdbId, traktId                        | At least one ID present                          |
+| OverallRating      | source                         | score, votes                                   | score 0-10, votes ≥ 0                            |
+| EpisodeRatingEntry | seasonNumber, episodeNumber    | title, tmdbScore, traktScore                   | seasonNumber ≥ 0, episodeNumber > 0, scores 0-10 |
+| AggregatedRatings  | ids, title, mediaType, overall | year, overview, posterUrl, episodesBySeason    | At least one overall rating source attempted     |
 
 ---
 
@@ -545,12 +595,14 @@ Return to Frontend
 **Design Principle**: All domain entities are immutable (read-only after creation)
 
 **Rationale**:
+
 - Phase 1 is stateless - no persistence, no caching
 - Data flows unidirectionally: API → provider → domain logic → frontend
 - Immutability simplifies reasoning about data transformations
 - TypeScript `readonly` modifiers enforce immutability at compile time
 
 **Example** (with readonly):
+
 ```typescript
 export interface SearchResult {
   readonly provider: 'tmdb';
@@ -568,15 +620,18 @@ export interface SearchResult {
 ## 8. Future Considerations (Post-Phase 1)
 
 **Database Schema (when persistence is added)**:
+
 - `shows` table: id, tmdb_id, imdb_id, trakt_id, title, year, media_type
 - `episodes` table: id, show_id, season_number, episode_number, title
 - `ratings` table: id, media_id, source, score, votes, updated_at
 
 **Caching Strategy**:
+
 - Cache `AggregatedRatings` responses in Redis for 1 hour (reduce external API calls)
 - Cache TMDB search results for 5 minutes
 
 **User Data**:
+
 - `users` table: id, email, hashed_password
 - `watchlist` table: user_id, media_id, added_at
 - `favorites` table: user_id, media_id, added_at

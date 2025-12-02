@@ -7,6 +7,7 @@ import type { MediaType, AggregatedRatings, UnifiedMediaId } from '@/lib/types/d
 import type { TmdbProvider } from '../../server/providers/tmdb.js';
 import type { OmdbProvider } from '../../server/providers/omdb.js';
 import type { TraktProvider } from '../../server/providers/trakt.js';
+import { mergeEpisodeRatings } from './episode-merge.js';
 
 export interface AggregationDependencies {
   tmdbProvider: TmdbProvider;
@@ -53,7 +54,24 @@ export async function aggregateRatings(
     trakt: traktResult.status === 'fulfilled' ? traktResult.value : null,
   };
 
-  // Step 4: Build and return AggregatedRatings
+  // Step 4: Fetch episode ratings for TV series
+  let episodesBySeason;
+  if (mediaType === 'tv' && ids.traktId) {
+    const [tmdbEpisodesResult, traktEpisodesResult] = await Promise.allSettled([
+      tmdbProvider.getEpisodeRatings(tmdbId),
+      traktProvider.getEpisodeRatings(ids.traktId),
+    ]);
+
+    const tmdbEpisodes = tmdbEpisodesResult.status === 'fulfilled' ? tmdbEpisodesResult.value : [];
+    const traktEpisodes =
+      traktEpisodesResult.status === 'fulfilled' ? traktEpisodesResult.value : [];
+
+    if (tmdbEpisodes.length > 0 || traktEpisodes.length > 0) {
+      episodesBySeason = mergeEpisodeRatings(tmdbEpisodes, traktEpisodes);
+    }
+  }
+
+  // Step 5: Build and return AggregatedRatings
   return {
     ids,
     title: details.title || details.name || 'Unknown',
@@ -64,9 +82,8 @@ export async function aggregateRatings(
         : undefined,
     mediaType,
     overview: details.overview || undefined,
-    posterUrl: details.poster_path
-      ? `https://image.tmdb.org/t/p/w500${details.poster_path}`
-      : null,
+    posterUrl: details.poster_path ? `https://image.tmdb.org/t/p/w500${details.poster_path}` : null,
     overall,
+    episodesBySeason,
   };
 }

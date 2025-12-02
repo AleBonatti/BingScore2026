@@ -16,6 +16,7 @@
 ## Path Conventions
 
 This is a full-stack web application:
+
 - **Backend**: `server/` (Fastify)
 - **Frontend**: `src/` (React + Vite)
 - **Shared**: `lib/` (domain logic, types, utilities)
@@ -455,6 +456,7 @@ With multiple developers:
 **Total Tasks**: 183
 
 **By Phase**:
+
 - Phase 1 (Setup): 28 tasks (T001-T028)
 - Phase 2 (Foundational): 13 tasks (T029-T041)
 - Phase 3 (User Story 1): 25 tasks (T042-T066)
@@ -463,6 +465,7 @@ With multiple developers:
 - Phase 6 (Polish): 41 tasks (T143-T183)
 
 **By User Story**:
+
 - User Story 1 (Search): 25 tasks
 - User Story 2 (Overall Ratings): 41 tasks
 - User Story 3 (Episode Ratings): 35 tasks
@@ -471,6 +474,7 @@ With multiple developers:
 **Parallel Opportunities**: 87 tasks marked [P] can run in parallel
 
 **Independent Test Criteria**:
+
 - ✅ US1: Type "Breaking Bad" → see results → click → navigate
 - ✅ US2: Navigate to /media/tv/1396 → see 3 ratings displayed
 - ✅ US3: Navigate to TV series → see season selector → see episode table

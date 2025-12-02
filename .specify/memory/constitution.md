@@ -54,6 +54,7 @@ Follow-up TODOs:
 All code MUST be written in TypeScript with strict type checking enabled.
 
 **Rules**:
+
 - `strict: true` in all `tsconfig.json` files
 - NO `any` types unless absolutely unavoidable and explicitly documented with a comment explaining why
 - Use type inference where appropriate, but prefer explicit types for function signatures and public APIs
@@ -67,6 +68,7 @@ All code MUST be written in TypeScript with strict type checking enabled.
 Start with the simplest solution that works. Avoid premature abstraction.
 
 **Rules**:
+
 - NO microservices: single repo, single app, single Postgres database
 - NO unnecessary frameworks: no Express, no NestJS, no Next.js
 - NO architectural patterns beyond simple layering: no CQRS, no event sourcing, no hexagonal architecture
@@ -74,12 +76,14 @@ Start with the simplest solution that works. Avoid premature abstraction.
 - If adding complexity (new abstraction, new pattern, new library), document why simpler alternatives were insufficient
 
 **DOs**:
+
 - Use plain functions and simple data structures
 - Keep components focused and single-purpose
 - Prefer composition over inheritance
 - Use standard library features before reaching for libraries
 
 **DON'Ts**:
+
 - Don't create abstraction layers until you have 3+ concrete use cases
 - Don't add dependencies without evaluating the bundle size impact
 - Don't create "framework" code or "engine" patterns
@@ -91,6 +95,7 @@ Start with the simplest solution that works. Avoid premature abstraction.
 The backend MUST be implemented as a long-lived Fastify server running in a Docker container.
 
 **Rules**:
+
 - Single Fastify instance as the entrypoint for all server-side concerns
 - NO serverless functions (this is a traditional Node.js server)
 - NO Express, NO NestJS (Fastify only)
@@ -99,6 +104,7 @@ The backend MUST be implemented as a long-lived Fastify server running in a Dock
 - In-memory caching is allowed (server is stateful)
 
 **Plugin Architecture**:
+
 - Use Fastify plugins to organize functionality:
   - Route registration (`showsRoutes`, `episodesRoutes`, `authRoutes`)
   - Database decoration (`fastify.db` for Drizzle instance)
@@ -106,6 +112,7 @@ The backend MUST be implemented as a long-lived Fastify server running in a Dock
 - Each plugin is a separate file under `server/plugins/`
 
 **Route Organization**:
+
 ```
 server/
   routes/
@@ -116,11 +123,13 @@ server/
 ```
 
 **Separation of Concerns**:
+
 - Routes (Fastify handlers) handle HTTP request/response only
 - Domain logic lives in `lib/domain/` (pure functions)
 - Data access lives in `lib/db/` (Drizzle queries)
 
 **CORS**:
+
 - Development: Allow Vite dev server origin (`http://localhost:5173`)
 - Production: Limit to deployed frontend origin or handle at reverse proxy
 
@@ -133,29 +142,34 @@ Testing is important, but MUST be pragmatic and focused to maintain development 
 **Test Scope**:
 
 **MUST TEST** (high priority):
+
 - Pure business logic functions: rating calculations, data transformations, filtering/sorting algorithms
 - Non-trivial utilities used in multiple places: formatters, mappers, score normalization
 - Any recommendation or ranking logic
 - Complex database query builders (not simple CRUD)
 
 **NICE TO HAVE** (when time allows):
+
 - 1-2 key React components with `@testing-library/react` (focus on data fetching + state handling)
 - 1-2 critical API endpoints tested with Fastify's `.inject()` method (no real HTTP)
 - Chart components (verify correct data shape passed to library)
 
 **OUT OF SCOPE** (for initial version):
+
 - E2E tests with Playwright/Cypress (can be added later)
 - Snapshot tests everywhere
 - Tests for purely presentational components (static layout/styling only)
 - 100% coverage as a goal
 
 **Tools**:
+
 - Test runner: `Vitest`
 - React testing: `@testing-library/react` (minimal usage)
 - Fastify testing: `fastify.inject()` for HTTP testing without real network
 - NO E2E framework in initial phase
 
 **Guidelines**:
+
 - Prefer testing pure functions (no I/O, no network) over heavy mocking
 - Keep tests next to code: `something.test.ts` alongside `something.ts`
 - If TypeScript + simple code = low risk, skip unit tests
@@ -168,24 +182,28 @@ Testing is important, but MUST be pragmatic and focused to maintain development 
 Local development MUST mirror production environment as closely as possible.
 
 **Development Environment**:
+
 - Frontend: Vite dev server (`npm run dev`)
 - Backend: Fastify server running locally (`npm run server:dev`)
 - Database: Local Postgres in Docker (via `docker-compose`)
 - Environment variables: `.env` file (never committed)
 
 **Production Environment**:
+
 - Frontend: Static assets built by Vite, served by Fastify or Nginx
 - Backend: Fastify server running in Docker container
 - Database: Managed Postgres (Neon, Supabase, Railway, or similar)
 - Environment variables: Platform-provided or Docker secrets
 
 **Configuration Parity**:
+
 - Same Node.js version in dev and prod (defined in `Dockerfile` and `.nvmrc`)
 - Same Postgres version in dev and prod
 - Same environment variable names in `.env` and production config
 - Database connection string format identical (with different credentials)
 
 **Container Parity**:
+
 - Use Docker Compose in development for full-stack local environment
 - Use same Dockerfile for local testing and production deployment
 - Verify app works in container locally before deploying
@@ -197,6 +215,7 @@ Local development MUST mirror production environment as closely as possible.
 ### Locked-In Choices (NON-NEGOTIABLE)
 
 **Frontend**:
+
 - React 18+ (function components + hooks only, no class components)
 - TypeScript (strict mode)
 - Vite (build tool + dev server)
@@ -204,28 +223,33 @@ Local development MUST mirror production environment as closely as possible.
 - NO Next.js, NO Remix, NO server-side rendering
 
 **Backend/API**:
+
 - Fastify (TypeScript)
 - Node.js LTS (long-lived server process)
 - NO Express, NO NestJS
 - NO serverless platforms (Vercel Functions, AWS Lambda, etc.)
 
 **Database**:
+
 - PostgreSQL (local Docker in dev, managed service in prod)
 - Drizzle ORM (schema definition, migrations, query builder)
 - Connection pooling at application startup
 
 **Hosting & Deployment**:
+
 - Docker-first: backend runs in container
 - Platform-agnostic: deployable to VPS, PaaS, or container platforms
 - Candidates: Hetzner, OVH, Railway, Render, Fly.io (final choice deferred)
 - Single repository (monorepo pattern with shared code)
 
 **Code Quality**:
+
 - ESLint + Prettier OR Biome (choose one, configure once)
 - TypeScript strict mode
 - Vitest for testing
 
 **Authentication** (high-level):
+
 - Stateless JWT tokens stored in HTTP-only cookies
 - JWT library integrated with Fastify (e.g., `@fastify/jwt`)
 - NO session storage in database (stateless only)
@@ -271,6 +295,7 @@ Local development MUST mirror production environment as closely as possible.
 ### Separation of Concerns
 
 **Transport Layer** (`server/routes/`):
+
 - Receive HTTP request, parse body/query/params
 - Validate input (Fastify schemas or Zod)
 - Call domain logic
@@ -279,6 +304,7 @@ Local development MUST mirror production environment as closely as possible.
 - MUST NOT contain business logic
 
 **Domain Layer** (`lib/domain/`):
+
 - Pure business logic
 - Testable functions that don't know about HTTP
 - Data transformations, calculations, filtering, sorting
@@ -286,6 +312,7 @@ Local development MUST mirror production environment as closely as possible.
 - Return plain data structures
 
 **Data Layer** (`lib/db/`):
+
 - Drizzle schema definitions (`schema.ts`)
 - Database connection setup (`client.ts`)
 - Query helpers (if needed for complex queries)
@@ -366,24 +393,29 @@ binge-ratings/
 ### Naming Conventions
 
 **Files**:
+
 - React components: `PascalCase.tsx` (e.g., `ShowCard.tsx`)
 - Utilities, helpers: `camelCase.ts` (e.g., `formatDate.ts`)
 - Fastify routes: `camelCase.ts` (e.g., `shows.ts`, `auth.ts`)
 - Tests: `*.test.ts` or `*.test.tsx` (colocated with code)
 
 **Imports**:
+
 - Use path aliases configured in `tsconfig.json`:
   - `@/components/...` → `src/components/...`
   - `@/lib/...` → `lib/...`
   - `@/server/...` → `server/...`
 
 **Components**:
+
 - Function components only, no class components
 - Export component as default: `export default function ShowCard() { ... }`
 - Props interface named `[ComponentName]Props`: `interface ShowCardProps { ... }`
 
 **API Responses**:
+
 - Always return JSON with consistent structure:
+
   ```ts
   // Success
   { data: T, error: null }
@@ -405,6 +437,7 @@ binge-ratings/
 - `DELETE /api/shows/:id` → Delete show (if needed)
 
 Use standard HTTP status codes:
+
 - `200 OK` → Success
 - `201 Created` → Resource created
 - `400 Bad Request` → Validation error
@@ -434,7 +467,7 @@ const showsRoutes: FastifyPluginAsync = async (fastify) => {
     if (!id || isNaN(Number(id))) {
       return reply.status(400).send({
         data: null,
-        error: { message: 'Invalid show ID' }
+        error: { message: 'Invalid show ID' },
       });
     }
 
@@ -445,7 +478,7 @@ const showsRoutes: FastifyPluginAsync = async (fastify) => {
       if (!show) {
         return reply.status(404).send({
           data: null,
-          error: { message: 'Show not found' }
+          error: { message: 'Show not found' },
         });
       }
 
@@ -454,7 +487,7 @@ const showsRoutes: FastifyPluginAsync = async (fastify) => {
       fastify.log.error(error, 'Error fetching show');
       return reply.status(500).send({
         data: null,
-        error: { message: 'Internal server error' }
+        error: { message: 'Internal server error' },
       });
     }
   });
@@ -469,22 +502,26 @@ Use Fastify JSON Schema or Zod for validation:
 
 ```ts
 // With Fastify schema
-fastify.post('/api/shows', {
-  schema: {
-    body: {
-      type: 'object',
-      required: ['title'],
-      properties: {
-        title: { type: 'string', minLength: 1 },
-        description: { type: 'string' }
-      }
-    }
+fastify.post(
+  '/api/shows',
+  {
+    schema: {
+      body: {
+        type: 'object',
+        required: ['title'],
+        properties: {
+          title: { type: 'string', minLength: 1 },
+          description: { type: 'string' },
+        },
+      },
+    },
+  },
+  async (request, reply) => {
+    // Body is validated automatically
+    const { title, description } = request.body;
+    // ...
   }
-}, async (request, reply) => {
-  // Body is validated automatically
-  const { title, description } = request.body;
-  // ...
-});
+);
 ```
 
 ### Error Handling
@@ -497,24 +534,27 @@ import { FastifyPluginAsync } from 'fastify';
 const errorHandler: FastifyPluginAsync = async (fastify) => {
   fastify.setErrorHandler((error, request, reply) => {
     // Log with context
-    fastify.log.error({
-      error,
-      url: request.url,
-      method: request.method,
-    }, 'Request error');
+    fastify.log.error(
+      {
+        error,
+        url: request.url,
+        method: request.method,
+      },
+      'Request error'
+    );
 
     // Don't expose internal errors to client
     if (error.statusCode && error.statusCode < 500) {
       return reply.status(error.statusCode).send({
         data: null,
-        error: { message: error.message }
+        error: { message: error.message },
       });
     }
 
     // Generic 500 error
     return reply.status(500).send({
       data: null,
-      error: { message: 'Internal server error' }
+      error: { message: 'Internal server error' },
     });
   });
 };
@@ -523,6 +563,7 @@ export default errorHandler;
 ```
 
 **Business Errors**:
+
 - Define custom error classes for business logic errors
 - Map them to appropriate HTTP status codes in error handler
 
@@ -539,7 +580,7 @@ const start = async () => {
   const app = await createApp({
     logger: {
       level: process.env.LOG_LEVEL || 'info',
-    }
+    },
   });
 
   const port = Number(process.env.PORT) || 4000;
@@ -622,6 +663,7 @@ export default fp(dbPlugin);
 ### Plugin Organization
 
 All plugins go in `server/plugins/`:
+
 - `db.ts` - Database decorator
 - `auth.ts` - JWT/authentication
 - `cors.ts` - CORS configuration
@@ -647,7 +689,9 @@ export const shows = pgTable('shows', {
 
 export const episodes = pgTable('episodes', {
   id: serial('id').primaryKey(),
-  showId: integer('show_id').references(() => shows.id).notNull(),
+  showId: integer('show_id')
+    .references(() => shows.id)
+    .notNull(),
   seasonNumber: integer('season_number').notNull(),
   episodeNumber: integer('episode_number').notNull(),
   title: text('title').notNull(),
@@ -678,24 +722,24 @@ export const db = drizzle(pool, { schema });
 const allShows = await db.select().from(shows);
 
 // With where clause
-const show = await db.select()
-  .from(shows)
-  .where(eq(shows.id, id))
-  .limit(1);
+const show = await db.select().from(shows).where(eq(shows.id, id)).limit(1);
 
 // Join
-const showWithEpisodes = await db.select()
+const showWithEpisodes = await db
+  .select()
   .from(shows)
   .leftJoin(episodes, eq(episodes.showId, shows.id))
   .where(eq(shows.id, id));
 ```
 
 **Migrations**:
+
 - Use Drizzle Kit: `drizzle-kit generate:pg` to create migrations
 - Apply with: `drizzle-kit push:pg` or `drizzle-kit migrate`
 - Store migrations in `lib/db/migrations/`
 
 **Conventions**:
+
 - All database queries go through Drizzle (no raw SQL unless absolutely necessary)
 - Pass `db` instance as parameter to domain functions (dependency injection)
 - Export types from schema: `export type Show = typeof shows.$inferSelect;`
@@ -705,32 +749,38 @@ const showWithEpisodes = await db.select()
 ### High-Level Design
 
 **Auth Storage**:
+
 - JWT token stored in HTTP-only cookie (not accessible via JavaScript)
 - Token contains user ID, email, expiration
 - Token signed with secret key (stored in environment variable)
 
 **Protected Routes**:
+
 - Fastify decorators or hooks check for valid JWT in cookie
 - If missing/invalid → return `401 Unauthorized`
 - If valid → attach user info to `request.user`
 
 **Auth Endpoints**:
+
 - `POST /api/auth/register` → Create user, return JWT in cookie
 - `POST /api/auth/login` → Validate credentials, return JWT in cookie
 - `POST /api/auth/logout` → Clear cookie
 - `GET /api/auth/me` → Return current user info (if authenticated)
 
 **Password Storage**:
+
 - Hash passwords with bcrypt (or argon2)
 - NEVER store plain-text passwords
 - Salt per-password (handled by bcrypt automatically)
 
 **Fastify Integration**:
+
 - Use `@fastify/jwt` for JWT signing/verification
 - Use `@fastify/cookie` for cookie handling
 - Create auth decorator or hook for protecting routes
 
 **Implementation Details** (deferred):
+
 - Exact JWT library configuration
 - Token expiration strategy (refresh tokens?)
 - Final decision in implementation phase
@@ -740,16 +790,19 @@ const showWithEpisodes = await db.select()
 ### Error Handling
 
 **In Route Handlers**:
+
 - Wrap logic in try-catch
 - Differentiate between expected errors (validation, not found) and unexpected errors
 - Use Fastify's error handling mechanisms
 
 **In Domain Layer**:
+
 - Throw custom error classes for business errors
 - Let errors bubble up to route handlers
 - Route handlers map errors to HTTP responses
 
 **Centralized**:
+
 - Single error handler plugin logs and formats all errors
 - Never expose internal error details to client (no stack traces in production)
 - Return user-friendly error messages
@@ -757,21 +810,25 @@ const showWithEpisodes = await db.select()
 ### Logging
 
 **Built-in Fastify Logger**:
+
 - Fastify includes Pino logger by default
 - Configure log level via environment variable
 - Structured JSON logging in production
 
 **What to Log**:
+
 - All unhandled errors (with stack trace)
 - Auth events (login, logout, failed attempts)
 - Slow queries (if performance monitoring added)
 - Request metadata (method, path, duration)
 
 **Logging Provider** (deferred):
+
 - Use built-in Pino logger initially
 - Can integrate external service later (e.g., Sentry, LogRocket, Grafana)
 
 **DO NOT log**:
+
 - Passwords or tokens
 - Full request bodies if they contain sensitive data
 - User PII unless necessary for debugging (and then redact in prod)
@@ -794,7 +851,7 @@ services:
       POSTGRES_PASSWORD: binge_pass
       POSTGRES_DB: binge_ratings
     ports:
-      - "5432:5432"
+      - '5432:5432'
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
@@ -808,7 +865,7 @@ services:
       PORT: 4000
       NODE_ENV: development
     ports:
-      - "4000:4000"
+      - '4000:4000'
     volumes:
       - .:/app
       - /app/node_modules
@@ -858,12 +915,14 @@ CMD ["node", "server/index.js"]
 ### Environment Variables
 
 **Required Variables**:
+
 - `DATABASE_URL` - PostgreSQL connection string
 - `PORT` - Server port (default 4000)
 - `NODE_ENV` - `development` or `production`
 - `JWT_SECRET` - Secret key for JWT signing
 
 **Optional Variables**:
+
 - `LOG_LEVEL` - Log verbosity (`debug`, `info`, `warn`, `error`)
 - `CORS_ORIGIN` - Allowed CORS origin (frontend URL)
 - `HOST` - Bind address (default `0.0.0.0`)
@@ -875,18 +934,21 @@ CMD ["node", "server/index.js"]
 The architecture is provider-agnostic and supports:
 
 **VPS Hosting** (e.g., Hetzner, OVH, DigitalOcean):
+
 - SSH into server
 - Install Docker
 - Run `docker-compose up -d` or deploy single container
 - Use Nginx as reverse proxy (optional)
 
 **Container PaaS** (e.g., Railway, Render, Fly.io):
+
 - Connect repository
 - Platform builds and deploys Docker container automatically
 - Configure environment variables via platform UI
 - Platform handles SSL, domains, scaling
 
 **Manual Deployment**:
+
 1. Build Docker image: `docker build -f docker/Dockerfile -t binge-ratings .`
 2. Push to registry (Docker Hub, GHCR, or private)
 3. Pull and run on server: `docker run -p 4000:4000 --env-file .env binge-ratings`
@@ -894,11 +956,13 @@ The architecture is provider-agnostic and supports:
 ### Static Asset Serving
 
 **Option 1: Fastify serves static files**:
+
 - Use `@fastify/static` plugin
 - Serve `dist/` directory at root
 - API routes under `/api/*`
 
 **Option 2: Nginx reverse proxy**:
+
 - Nginx serves `dist/` directly (faster for static files)
 - Nginx forwards `/api/*` to Fastify backend
 - More complex but better performance
@@ -908,12 +972,14 @@ The architecture is provider-agnostic and supports:
 ### Database in Production
 
 **Managed Postgres Options**:
+
 - Neon (serverless Postgres, generous free tier)
 - Supabase (Postgres + additional features)
 - Railway Postgres (simple, integrated with Railway hosting)
 - Any standard Postgres provider (AWS RDS, DigitalOcean, etc.)
 
 **Connection**:
+
 - App only needs `DATABASE_URL` environment variable
 - Use connection pooling (configured in `lib/db/client.ts`)
 - Consider connection limits based on provider tier
@@ -923,6 +989,7 @@ The architecture is provider-agnostic and supports:
 **Development**: HTTP only (no SSL needed)
 
 **Production**:
+
 - Use platform-provided SSL (Railway, Render, Fly.io handle automatically)
 - OR use Let's Encrypt + Nginx if self-hosting on VPS
 - NEVER handle SSL termination in Node.js application
@@ -938,32 +1005,38 @@ The architecture is provider-agnostic and supports:
 ### First-Time Setup
 
 1. Clone repository:
+
    ```bash
    git clone <repo-url>
    cd binge-ratings
    ```
 
 2. Install dependencies:
+
    ```bash
    npm install
    ```
 
 3. Copy environment variables:
+
    ```bash
    cp .env.example .env
    ```
 
 4. Start Docker Compose (Postgres + server):
+
    ```bash
    docker-compose up -d postgres
    ```
 
 5. Run database migrations:
+
    ```bash
    npm run db:migrate
    ```
 
 6. Start development servers:
+
    ```bash
    # Terminal 1: Vite frontend dev server
    npm run dev
@@ -980,27 +1053,32 @@ The architecture is provider-agnostic and supports:
 ### Development Workflow
 
 **Frontend Development**:
+
 - `npm run dev` → Vite dev server with HMR
 - Edit files in `src/`
 - Hot module replacement for instant feedback
 
 **Backend Development**:
+
 - `npm run server:dev` → Fastify server with auto-reload
 - Edit files in `server/` or `lib/`
 - Server restarts automatically on file changes
 
 **Database Changes**:
+
 1. Edit `lib/db/schema.ts`
 2. Generate migration: `npm run db:generate`
 3. Apply migration: `npm run db:migrate`
 4. Migration files stored in `lib/db/migrations/`
 
 **Testing**:
+
 - Run tests: `npm test`
 - Watch mode: `npm run test:watch`
 - Coverage: `npm run test:coverage` (optional)
 
 **Linting & Formatting**:
+
 - Lint: `npm run lint`
 - Format: `npm run format`
 - Type check: `npm run typecheck`
@@ -1059,6 +1137,7 @@ The architecture is provider-agnostic and supports:
 ### Amendment Process
 
 Constitution amendments require:
+
 1. Written proposal with rationale
 2. Impact analysis: what code/config needs to change?
 3. Version bump following semantic versioning:
@@ -1071,11 +1150,13 @@ Constitution amendments require:
 ### Compliance
 
 Before starting a feature:
+
 - Review relevant constitution sections
 - Ensure tech stack compliance (Fastify, no serverless, Docker-first)
 - Verify architecture patterns followed
 
 During code review (self-review):
+
 - Check for `any` types (should be rare and documented)
 - Verify separation of concerns (routes vs domain vs data)
 - Ensure tests exist for complex logic

@@ -26,11 +26,7 @@ export default function SearchResultItem({ result }: SearchResultItemProps) {
       onClick={handleClick}
     >
       {result.posterUrl ? (
-        <img
-          src={result.posterUrl}
-          alt={result.title}
-          className="w-12 h-18 object-cover rounded"
-        />
+        <img src={result.posterUrl} alt={result.title} className="w-12 h-18 object-cover rounded" />
       ) : (
         <div className="w-12 h-18 bg-gray-300 dark:bg-gray-600 rounded flex items-center justify-center">
           {result.mediaType === 'movie' ? (

@@ -3,21 +3,34 @@
  * Displays aggregated ratings for a media item
  */
 
+import { useState } from 'react';
 import { useParams } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { Loader } from 'lucide-react';
 import { useMediaAggregation } from '../hooks/useMediaAggregation';
 import MediaDetailHeader from '../components/media/MediaDetailHeader';
 import OverallRatingsPanel from '../components/media/OverallRatingsPanel';
+import SeasonSelector from '../components/media/SeasonSelector';
+import EpisodeRatingsDisplay from '../components/media/EpisodeRatingsDisplay';
 import type { MediaType } from '@/lib/types/domain';
 
 export default function MediaDetailPage() {
   const { mediaType, tmdbId } = useParams<{ mediaType: string; tmdbId: string }>();
 
   const parsedTmdbId = parseInt(tmdbId || '0', 10);
-  const validMediaType = (mediaType === 'movie' || mediaType === 'tv' ? mediaType : 'movie') as MediaType;
+  const validMediaType = (
+    mediaType === 'movie' || mediaType === 'tv' ? mediaType : 'movie'
+  ) as MediaType;
 
   const { data, isLoading, error } = useMediaAggregation(parsedTmdbId, validMediaType);
+
+  // State for selected season
+  const seasons = data?.episodesBySeason
+    ? Object.keys(data.episodesBySeason)
+        .map(Number)
+        .sort((a, b) => a - b)
+    : [];
+  const [selectedSeason, setSelectedSeason] = useState(seasons[0] || 1);
 
   // Show error toast if aggregation fails
   if (error) {
@@ -57,6 +70,24 @@ export default function MediaDetailPage() {
         mediaType={data.mediaType}
       />
       <OverallRatingsPanel ratings={data} />
+
+      {/* Episode Ratings Section (TV Series Only) */}
+      {data.mediaType === 'tv' && data.episodesBySeason && seasons.length > 0 && (
+        <div className="mt-8">
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Episode Ratings</h2>
+          <SeasonSelector
+            seasons={seasons}
+            selectedSeason={selectedSeason}
+            onSelectSeason={setSelectedSeason}
+          />
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden">
+            <EpisodeRatingsDisplay
+              episodes={data.episodesBySeason[selectedSeason] || []}
+              seasonNumber={selectedSeason}
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 }

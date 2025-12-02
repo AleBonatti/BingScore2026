@@ -17,17 +17,20 @@ A full-stack TypeScript web application that searches for movies and TV series, 
 ## Getting API Keys
 
 ### TMDB API Key
+
 1. Create account at https://www.themoviedb.org/
 2. Go to Settings → API → Request API Key
 3. Choose "Developer" option and fill out form
 4. Copy your **API Key (v3 auth)**
 
 ### OMDb API Key
+
 1. Go to https://www.omdbapi.com/apikey.aspx
 2. Select "FREE! (1,000 daily limit)"
 3. Enter your email and activate via email link
 
 ### Trakt Client ID
+
 1. Create account at https://trakt.tv/
 2. Go to Settings → Your API Apps → New Application
 3. Fill out form with redirect URI: `urn:ietf:wg:oauth:2.0:oob`
@@ -36,6 +39,7 @@ A full-stack TypeScript web application that searches for movies and TV series, 
 ## Setup
 
 1. **Clone and install dependencies**:
+
 ```bash
 git clone <repo-url>
 cd BingScore2026
@@ -43,6 +47,7 @@ npm install
 ```
 
 2. **Configure environment variables**:
+
 ```bash
 cp .env.example .env
 # Edit .env with your API keys
@@ -51,16 +56,19 @@ cp .env.example .env
 3. **Start development servers**:
 
 Terminal 1 (Frontend):
+
 ```bash
 npm run dev
 ```
 
 Terminal 2 (Backend):
+
 ```bash
 npm run server:dev
 ```
 
 4. **Verify setup**:
+
 - Backend: http://localhost:4000/health should return `{"status":"ok"}`
 - Frontend: http://localhost:5173
 
@@ -95,10 +103,15 @@ npm run server:dev
 
 ## Features
 
-### Phase 1 (Current)
-- ✅ Search for TV series and movies (TMDB)
-- 🚧 View aggregated ratings from TMDB, IMDb, and Trakt
-- 🚧 Episode-by-episode ratings for TV series
+### Phase 1 (Complete ✅)
+
+- ✅ Search for TV series and movies with autocomplete (300ms debounce)
+- ✅ View aggregated ratings from TMDB, IMDb, and Trakt
+- ✅ Episode-by-episode ratings for TV series with season selector
+- ✅ Dark mode support with toggle
+- ✅ Responsive design (mobile and desktop)
+- ✅ Beautiful UI with Framer Motion animations
+- ✅ Graceful error handling and loading states
 
 ## Documentation
 
