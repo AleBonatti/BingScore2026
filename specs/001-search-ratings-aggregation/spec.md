@@ -5,6 +5,14 @@
 **Status**: Draft
 **Input**: User description: "BingeScore Phase 1: Search and Ratings Aggregation - Anonymous search flow with TMDB, OMDb, and Trakt aggregation"
 
+## Clarifications
+
+### Session 2025-12-02
+
+- Q: When should the autocomplete search be triggered to balance responsiveness with API efficiency? → A: After 2+ characters with 300ms debounce
+- Q: What specific visualization format should be used for displaying episode-by-episode ratings? → A: Raw data only
+- Q: How should the system behave when external API rate limits are exceeded? → A: Display error message only, allow immediate retry
+
 ## User Scenarios & Testing *(mandatory)*
 
 ### User Story 1 - Search for TV Series or Movie (Priority: P1)
@@ -63,6 +71,7 @@ For TV series, a user can see episode-by-episode ratings organized by season. Th
 - What happens when a user searches for a title that doesn't exist in TMDB?
 - How does the system handle network timeouts when fetching data from external APIs (TMDB, OMDb, Trakt)?
 - What happens when one or more rating providers return errors or are unavailable?
+- How does the system handle API rate limit errors? System displays clear error message and allows immediate retry
 - How does the system handle special characters or non-Latin scripts in search queries?
 - What happens when a TV series has incomplete episode data (missing seasons or episodes)?
 - How does the system handle content that exists in TMDB but lacks an IMDb ID?
@@ -74,6 +83,7 @@ For TV series, a user can see episode-by-episode ratings organized by season. Th
 ### Functional Requirements
 
 - **FR-001**: System MUST provide a search interface that accepts text input from users
+- **FR-001a**: System MUST trigger autocomplete search after user types 2 or more characters with a 300ms debounce delay
 - **FR-002**: System MUST query TMDB's "Search Multi" endpoint to find matching TV series and movies based on user input
 - **FR-003**: System MUST filter search results to include only items with mediaType of "movie" or "tv"
 - **FR-004**: System MUST display search results showing title, year, poster image, and media type for each result
@@ -87,8 +97,9 @@ For TV series, a user can see episode-by-episode ratings organized by season. Th
 - **FR-012**: System MUST display aggregated overall ratings showing score and vote count for each source
 - **FR-013**: For TV series, system MUST fetch episode-by-episode ratings from both TMDB and Trakt
 - **FR-014**: For TV series, system MUST organize episode ratings by season number and episode number
-- **FR-015**: For TV series, system MUST display episode ratings in a visual format that allows comparison across seasons
+- **FR-015**: For TV series, system MUST display episode ratings as raw data (structured list/table) organized by season, showing episode number, title, TMDB score, and Trakt score
 - **FR-016**: System MUST handle API errors gracefully without crashing the application
+- **FR-016a**: When API rate limits are exceeded, system MUST display a clear error message indicating the rate limit has been reached and allow users to retry immediately
 - **FR-017**: System MUST display user-friendly error messages when external services are unavailable
 - **FR-018**: System MUST indicate when rating data is unavailable from specific sources
 - **FR-019**: System MUST operate without requiring user authentication or accounts (anonymous access)
@@ -257,9 +268,9 @@ The user interface must adhere to these design principles:
 **TV Series Specific**:
 - Season selector MUST use horizontal pill-style buttons
 - Currently selected season MUST be clearly indicated
-- Episode ratings MUST be displayed in a visual format (chart or table)
-- Users MUST be able to compare ratings across episodes
-- Display episode number, title, and ratings from available sources
+- Episode ratings MUST be displayed as raw data in a structured format (table or list)
+- Users MUST be able to compare ratings across episodes by viewing episode number, title, TMDB score, and Trakt score
+- Display clear indicators when rating data is missing for specific episodes
 
 ### Core Components
 
