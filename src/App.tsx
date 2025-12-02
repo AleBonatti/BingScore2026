@@ -7,13 +7,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Header from './components/layout/Header';
 import Footer from './components/layout/Footer';
 import SearchPage from './pages/SearchPage';
-
-// Placeholder page for now
-const MediaDetailPage = () => (
-  <div className="max-w-7xl mx-auto px-4 py-8">
-    <p className="text-gray-700 dark:text-gray-300">Media Detail Page - Coming soon</p>
-  </div>
-);
+import MediaDetailPage from './pages/MediaDetailPage';
 
 export default function App() {
   return (

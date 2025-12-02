@@ -4,7 +4,7 @@
  */
 
 import { FastifyPluginAsync, FastifyError } from 'fastify';
-import type { ErrorResponse } from '@/lib/types/api.js';
+import type { ErrorResponse } from '../../lib/types/api.js';
 
 const errorHandlerPlugin: FastifyPluginAsync = async (fastify) => {
   fastify.setErrorHandler((error: FastifyError, request, reply) => {
