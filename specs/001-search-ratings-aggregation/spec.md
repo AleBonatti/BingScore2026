@@ -342,3 +342,52 @@ The following are explicitly out of scope for Phase 1 but noted for future consi
 - Comparison mode for multiple series
 - Customizable theme colors
 - User preference persistence for dark/light mode
+
+## Supporting Libraries & Utilities
+
+To ensure consistent implementation patterns and reduce ad-hoc technical decisions, the following utility libraries are designated as standard tools for this feature:
+
+### Animation Library
+- **Purpose**: Composable UI micro-interactions (page transitions, hover/focus animations, list/element transitions)
+- **Requirements**:
+  - Animations MUST remain optional and non-blocking
+  - Application MUST function fully without animations enabled
+  - Focus on subtle, purposeful motion rather than decorative effects
+
+### Runtime Validation
+- **Purpose**: Validate external provider responses and request parameters
+- **Use Cases**:
+  - Validating responses from TMDB, OMDb, and Trakt APIs
+  - Validating search query parameters and media identifiers
+  - Ensuring data integrity at system boundaries
+- **Requirements**:
+  - Schema-based validation for API responses
+  - Type-safe validation that integrates with TypeScript
+
+### User Feedback System
+- **Purpose**: Display transient, global messages to users
+- **Use Cases**:
+  - Error notifications (API failures, rate limits, network issues)
+  - Success confirmations (when applicable in future phases)
+  - Warning messages (partial data availability, missing ratings)
+- **Requirements**:
+  - Non-intrusive toast-style notifications
+  - Consistent positioning and styling across the application
+  - Automatic dismissal with configurable duration
+  - Support for different message types (error, warning, info, success)
+
+### Date/Time Formatting
+- **Purpose**: Format and manipulate dates consistently
+- **Use Cases**:
+  - Displaying release years and dates for media items
+  - Formatting episode air dates (if displayed in future enhancements)
+  - Handling timezone conversions if needed
+- **Requirements**:
+  - Consistent date formatting across all components
+  - Locale-aware formatting where applicable
+  - Avoid ad-hoc string manipulation or inconsistent native Date methods
+
+### Implementation Notes
+- These libraries are considered part of the standard toolkit for BingeScore
+- Replacing any of these libraries should be treated as an architectural decision requiring constitution-level review
+- All libraries must be compatible with the React 18+ and TypeScript strict mode requirements defined in the project constitution
