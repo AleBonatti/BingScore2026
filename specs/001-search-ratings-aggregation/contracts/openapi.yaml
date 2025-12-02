@@ -1,0 +1,541 @@
+openapi: 3.0.3
+info:
+  title: BingeScore API - Phase 1
+  description: |
+    BingeScore Phase 1 API for searching TV series/movies and aggregating ratings from multiple sources (TMDB, OMDb, Trakt).
+
+    **Features**:
+    - Search for movies and TV series via autocomplete
+    - Retrieve aggregated ratings from TMDB, IMDb (via OMDb), and Trakt
+    - View episode-by-episode ratings for TV series
+
+    **Constraints**:
+    - Anonymous access only (no authentication)
+    - Stateless operation (no caching, no persistence)
+    - Real-time data fetching from external APIs
+  version: 1.0.0
+  contact:
+    name: BingeScore Team
+    url: https://github.com/your-repo/binge-ratings
+
+servers:
+  - url: http://localhost:4000
+    description: Local development server
+  - url: https://api.bingescore.com
+    description: Production server (placeholder)
+
+paths:
+  /api/search:
+    get:
+      summary: Search for movies and TV series
+      description: |
+        Search TMDB for movies and TV series matching the provided query.
+        Returns a list of search results with basic metadata.
+
+        **Behavior**:
+        - Minimum 2 characters required (FR-001a)
+        - Frontend implements 300ms debounce
+        - Results filtered to mediaType "movie" or "tv" only (FR-003)
+        - Returns up to 20 results (TMDB default)
+      operationId: searchMedia
+      tags:
+        - Search
+      parameters:
+        - name: q
+          in: query
+          required: true
+          description: Search query string (minimum 2 characters)
+          schema:
+            type: string
+            minLength: 2
+            example: "breaking bad"
+      responses:
+        '200':
+          description: Successful search results
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SearchResult'
+              examples:
+                tvShow:
+                  summary: TV Show Result
+                  value:
+                    - provider: "tmdb"
+                      tmdbId: 1396
+                      imdbId: "tt0903747"
+                      mediaType: "tv"
+                      title: "Breaking Bad"
+                      originalTitle: "Breaking Bad"
+                      year: 2008
+                      overview: "A high school chemistry teacher turned meth manufacturer..."
+                      posterUrl: "/ggFHVNu6YYI5L9pCfOacjizRGt.jpg"
+                      backdropUrl: "/tsRy63Mu5cu8etL1X7ZLyf7UP1M.jpg"
+                movie:
+                  summary: Movie Result
+                  value:
+                    - provider: "tmdb"
+                      tmdbId: 550
+                      imdbId: "tt0137523"
+                      mediaType: "movie"
+                      title: "Fight Club"
+                      year: 1999
+                      overview: "An insomniac office worker forms an underground fight club..."
+                      posterUrl: "/a26cQPRhJPX6GbWfQbvZdrrp9j9.jpg"
+        '400':
+          description: Invalid query parameters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                missingQuery:
+                  summary: Missing query parameter
+                  value:
+                    data: null
+                    error:
+                      message: "Query parameter 'q' is required"
+                      code: "VALIDATION_ERROR"
+                tooShort:
+                  summary: Query too short
+                  value:
+                    data: null
+                    error:
+                      message: "Query must be at least 2 characters"
+                      code: "VALIDATION_ERROR"
+        '502':
+          description: TMDB API failure
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                tmdbError:
+                  summary: TMDB API Error
+                  value:
+                    data: null
+                    error:
+                      message: "Failed to fetch results from TMDB"
+                      code: "EXTERNAL_API_ERROR"
+
+  /api/media/aggregate:
+    get:
+      summary: Get aggregated ratings for a media item
+      description: |
+        Fetch and aggregate ratings from multiple sources (TMDB, OMDb/IMDb, Trakt) for a specific movie or TV series.
+
+        **Behavior**:
+        - Fetches ratings from all providers in parallel
+        - Returns partial data if some providers fail (graceful degradation per SC-006)
+        - For TV series, includes episode-by-episode ratings organized by season
+        - Episode ratings displayed as raw data (FR-015)
+      operationId: aggregateRatings
+      tags:
+        - Ratings
+      parameters:
+        - name: tmdbId
+          in: query
+          required: true
+          description: TMDB ID of the media item
+          schema:
+            type: integer
+            minimum: 1
+            example: 1396
+        - name: mediaType
+          in: query
+          required: true
+          description: Type of media (movie or TV series)
+          schema:
+            type: string
+            enum: [movie, tv]
+            example: "tv"
+      responses:
+        '200':
+          description: Successfully aggregated ratings
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AggregatedRatings'
+              examples:
+                tvShow:
+                  summary: TV Show with Full Ratings
+                  value:
+                    ids:
+                      mediaType: "tv"
+                      tmdbId: 1396
+                      imdbId: "tt0903747"
+                      traktId: "breaking-bad"
+                    title: "Breaking Bad"
+                    year: 2008
+                    mediaType: "tv"
+                    overview: "A high school chemistry teacher turned meth manufacturer..."
+                    posterUrl: "/ggFHVNu6YYI5L9pCfOacjizRGt.jpg"
+                    overall:
+                      tmdb:
+                        source: "tmdb"
+                        score: 8.9
+                        votes: 12500
+                      imdb:
+                        source: "imdb"
+                        score: 9.5
+                        votes: 2000000
+                      trakt:
+                        source: "trakt"
+                        score: 9.3
+                        votes: 85000
+                    episodesBySeason:
+                      "1":
+                        - seasonNumber: 1
+                          episodeNumber: 1
+                          title: "Pilot"
+                          tmdbScore: 8.2
+                          traktScore: 8.5
+                        - seasonNumber: 1
+                          episodeNumber: 2
+                          title: "Cat's in the Bag..."
+                          tmdbScore: 8.4
+                          traktScore: 8.6
+                movie:
+                  summary: Movie with Partial Ratings (OMDb failed)
+                  value:
+                    ids:
+                      mediaType: "movie"
+                      tmdbId: 550
+                      imdbId: "tt0137523"
+                      traktId: "fight-club-1999"
+                    title: "Fight Club"
+                    year: 1999
+                    mediaType: "movie"
+                    overview: "An insomniac office worker forms an underground fight club..."
+                    posterUrl: "/a26cQPRhJPX6GbWfQbvZdrrp9j9.jpg"
+                    overall:
+                      tmdb:
+                        source: "tmdb"
+                        score: 8.4
+                        votes: 28000
+                      imdb: null
+                      trakt:
+                        source: "trakt"
+                        score: 8.7
+                        votes: 120000
+        '400':
+          description: Invalid request parameters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                invalidTmdbId:
+                  summary: Invalid TMDB ID
+                  value:
+                    data: null
+                    error:
+                      message: "Invalid tmdbId parameter"
+                      code: "VALIDATION_ERROR"
+                invalidMediaType:
+                  summary: Invalid media type
+                  value:
+                    data: null
+                    error:
+                      message: "mediaType must be 'movie' or 'tv'"
+                      code: "VALIDATION_ERROR"
+        '404':
+          description: Media item not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                notFound:
+                  summary: Media Not Found
+                  value:
+                    data: null
+                    error:
+                      message: "Media item not found in TMDB"
+                      code: "NOT_FOUND"
+        '429':
+          description: Rate limit exceeded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                rateLimit:
+                  summary: Rate Limit Exceeded (FR-016a)
+                  value:
+                    data: null
+                    error:
+                      message: "Rate limit exceeded. Please try again shortly."
+                      code: "RATE_LIMIT_EXCEEDED"
+        '502':
+          description: Upstream provider error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                allProvidersFailed:
+                  summary: All Providers Failed
+                  value:
+                    data: null
+                    error:
+                      message: "Failed to fetch ratings from all providers"
+                      code: "EXTERNAL_API_ERROR"
+
+  /health:
+    get:
+      summary: Health check endpoint
+      description: Returns server health status
+      operationId: healthCheck
+      tags:
+        - System
+      responses:
+        '200':
+          description: Server is healthy
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "ok"
+
+components:
+  schemas:
+    MediaType:
+      type: string
+      enum: [movie, tv]
+      description: Type of media item
+
+    SearchResult:
+      type: object
+      required:
+        - provider
+        - tmdbId
+        - mediaType
+        - title
+      properties:
+        provider:
+          type: string
+          enum: [tmdb]
+          description: Source of the search result (always "tmdb" in Phase 1)
+        tmdbId:
+          type: integer
+          minimum: 1
+          description: TMDB unique identifier
+          example: 1396
+        imdbId:
+          type: string
+          nullable: true
+          pattern: '^tt\d+$'
+          description: IMDb ID (format tt1234567), if available
+          example: "tt0903747"
+        mediaType:
+          $ref: '#/components/schemas/MediaType'
+        title:
+          type: string
+          minLength: 1
+          description: Display title (movie title or TV series name)
+          example: "Breaking Bad"
+        originalTitle:
+          type: string
+          description: Original title (if different from translated title)
+          example: "Breaking Bad"
+        year:
+          type: integer
+          minimum: 1800
+          maximum: 2100
+          description: Release year
+          example: 2008
+        overview:
+          type: string
+          description: Synopsis/description
+          example: "A high school chemistry teacher turned meth manufacturer..."
+        posterUrl:
+          type: string
+          nullable: true
+          description: Poster image URL path (TMDB CDN)
+          example: "/ggFHVNu6YYI5L9pCfOacjizRGt.jpg"
+        backdropUrl:
+          type: string
+          nullable: true
+          description: Backdrop image URL path (TMDB CDN)
+          example: "/tsRy63Mu5cu8etL1X7ZLyf7UP1M.jpg"
+
+    UnifiedMediaId:
+      type: object
+      required:
+        - mediaType
+      properties:
+        mediaType:
+          $ref: '#/components/schemas/MediaType'
+        tmdbId:
+          type: integer
+          minimum: 1
+          description: TMDB ID
+          example: 1396
+        imdbId:
+          type: string
+          pattern: '^tt\d+$'
+          description: IMDb ID (format tt1234567)
+          example: "tt0903747"
+        traktId:
+          type: string
+          description: Trakt ID (slug format)
+          example: "breaking-bad"
+      description: At least one of tmdbId, imdbId, or traktId must be present
+
+    OverallRating:
+      type: object
+      required:
+        - source
+        - score
+      properties:
+        source:
+          type: string
+          enum: [tmdb, imdb, trakt]
+          description: Rating provider
+        score:
+          type: number
+          nullable: true
+          minimum: 0
+          maximum: 10
+          description: Rating score (normalized to 0-10 scale)
+          example: 9.5
+        votes:
+          type: integer
+          nullable: true
+          minimum: 0
+          description: Number of votes/reviews
+          example: 2000000
+
+    EpisodeRatingEntry:
+      type: object
+      required:
+        - seasonNumber
+        - episodeNumber
+      properties:
+        seasonNumber:
+          type: integer
+          minimum: 0
+          description: Season number (0 for specials)
+          example: 1
+        episodeNumber:
+          type: integer
+          minimum: 1
+          description: Episode number within season
+          example: 1
+        title:
+          type: string
+          description: Episode title
+          example: "Pilot"
+        tmdbScore:
+          type: number
+          nullable: true
+          minimum: 0
+          maximum: 10
+          description: TMDB rating (0-10), null if unavailable
+          example: 8.2
+        traktScore:
+          type: number
+          nullable: true
+          minimum: 0
+          maximum: 10
+          description: Trakt rating (0-10), null if unavailable
+          example: 8.5
+
+    AggregatedRatings:
+      type: object
+      required:
+        - ids
+        - title
+        - mediaType
+        - overall
+      properties:
+        ids:
+          $ref: '#/components/schemas/UnifiedMediaId'
+        title:
+          type: string
+          minLength: 1
+          description: Media title
+          example: "Breaking Bad"
+        year:
+          type: integer
+          minimum: 1800
+          maximum: 2100
+          description: Release year
+          example: 2008
+        mediaType:
+          $ref: '#/components/schemas/MediaType'
+        overview:
+          type: string
+          description: Synopsis
+          example: "A high school chemistry teacher turned meth manufacturer..."
+        posterUrl:
+          type: string
+          nullable: true
+          description: Poster image URL
+          example: "/ggFHVNu6YYI5L9pCfOacjizRGt.jpg"
+        overall:
+          type: object
+          properties:
+            tmdb:
+              allOf:
+                - $ref: '#/components/schemas/OverallRating'
+                - nullable: true
+            imdb:
+              allOf:
+                - $ref: '#/components/schemas/OverallRating'
+                - nullable: true
+            trakt:
+              allOf:
+                - $ref: '#/components/schemas/OverallRating'
+                - nullable: true
+          description: Overall ratings from all sources (may contain nulls if providers fail)
+        episodesBySeason:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              $ref: '#/components/schemas/EpisodeRatingEntry'
+          description: TV series only - episode ratings organized by season number
+          example:
+            "1":
+              - seasonNumber: 1
+                episodeNumber: 1
+                title: "Pilot"
+                tmdbScore: 8.2
+                traktScore: 8.5
+
+    ErrorResponse:
+      type: object
+      required:
+        - data
+        - error
+      properties:
+        data:
+          type: "null"
+          description: Always null in error responses
+        error:
+          type: object
+          required:
+            - message
+          properties:
+            message:
+              type: string
+              description: Human-readable error message
+              example: "Rate limit exceeded. Please try again shortly."
+            code:
+              type: string
+              description: Machine-readable error code (optional)
+              example: "RATE_LIMIT_EXCEEDED"
+
+tags:
+  - name: Search
+    description: Search for movies and TV series
+  - name: Ratings
+    description: Aggregate ratings from multiple sources
+  - name: System
+    description: System health and status endpoints
