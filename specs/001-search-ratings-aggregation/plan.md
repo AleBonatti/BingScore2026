@@ -17,7 +17,7 @@ BingeScore Phase 1 delivers an anonymous, stateless web application for searchin
 - **Frontend**: React 18+, Vite (build tool), Tailwind CSS v4, Lucide icons, Framer Motion (animations), react-hot-toast (notifications), TanStack Query (data fetching)
 - **External APIs**: TMDB (search, details, ratings), OMDb (IMDb ratings), Trakt (ratings, episode data)
 
-**Storage**: None (Phase 1 is stateless - no database, no caching beyond in-memory)
+**Storage**: None (Phase 1 is stateless - no database, no caching)
 **Testing**: Vitest (test runner), @testing-library/react (React component testing), Fastify .inject() for API testing
 **Target Platform**: Web browsers (modern Chrome, Firefox, Safari, Edge) + Node.js server (Docker container)
 **Project Type**: Full-stack web application (React SPA + Fastify API server)
