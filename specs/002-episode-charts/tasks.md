@@ -24,9 +24,9 @@
 
 **Purpose**: Install dependencies and create foundational utilities
 
-- [ ] T001 Install Recharts dependency: `npm install recharts` (verify TypeScript types are built-in, no @types/recharts needed)
-- [ ] T002 [P] Create chart data transformation utility in src/lib/utils/chart-data.ts with `transformEpisodesToChartData` function
-- [ ] T003 [P] Create chart data type definition `EpisodeChartPoint` in src/lib/utils/chart-data.ts (episode: number, title: string, tmdb: number|null, trakt: number|null)
+- [x] T001 Install Recharts dependency: `npm install recharts` (verify TypeScript types are built-in, no @types/recharts needed)
+- [x] T002 [P] Create chart data transformation utility in src/lib/utils/chart-data.ts with `transformEpisodesToChartData` function
+- [x] T003 [P] Create chart data type definition `EpisodeChartPoint` in src/lib/utils/chart-data.ts (episode: number, title: string, tmdb: number|null, trakt: number|null)
 
 **Checkpoint**: Foundation ready - Recharts installed, transformation utility exists
 
@@ -40,19 +40,19 @@
 
 ### Implementation for User Story 1
 
-- [ ] T004 [P] [US1] Create EpisodeChart component skeleton in src/components/media/EpisodeChart.tsx (define props: episodes, seasonNumber, isLoading)
-- [ ] T005 [P] [US1] Create custom tooltip component in src/components/media/EpisodeChart.tsx (show episode number, title, TMDB score, Trakt score)
-- [ ] T006 [US1] Implement ResponsiveContainer wrapper in src/components/media/EpisodeChart.tsx (width="100%", height={400})
-- [ ] T007 [US1] Implement LineChart with XAxis and YAxis in src/components/media/EpisodeChart.tsx (XAxis dataKey="episode", YAxis domain=[0,10])
-- [ ] T008 [US1] Add TMDB Line component in src/components/media/EpisodeChart.tsx (stroke="#3b82f6", connectNulls, animationDuration={300})
-- [ ] T009 [US1] Add Trakt Line component in src/components/media/EpisodeChart.tsx (stroke="#ef4444", connectNulls, animationDuration={300})
-- [ ] T010 [US1] Add CartesianGrid and Legend to chart in src/components/media/EpisodeChart.tsx
-- [ ] T011 [US1] Implement data transformation call in src/components/media/EpisodeChart.tsx (use transformEpisodesToChartData from chart-data.ts)
-- [ ] T012 [US1] Add loading state skeleton to EpisodeChart in src/components/media/EpisodeChart.tsx (show spinner when isLoading=true)
-- [ ] T013 [US1] Add empty state and error handling to EpisodeChart in src/components/media/EpisodeChart.tsx (hide chart when episodes array is empty, show error message if chart fails to render)
-- [ ] T014 [US1] Integrate EpisodeChart into MediaDetailPage in src/pages/MediaDetailPage.tsx (position above EpisodeRatingsDisplay table)
-- [ ] T015 [US1] Pass episode data from MediaDetailPage to EpisodeChart in src/pages/MediaDetailPage.tsx (episodes={data.episodesBySeason[selectedSeason]})
-- [ ] T016 [US1] Add conditional rendering for TV series only in src/pages/MediaDetailPage.tsx (only show chart when mediaType === 'tv' and episodesBySeason exists)
+- [x] T004 [P] [US1] Create EpisodeChart component skeleton in src/components/media/EpisodeChart.tsx (define props: episodes, seasonNumber, isLoading)
+- [x] T005 [P] [US1] Create custom tooltip component in src/components/media/EpisodeChart.tsx (show episode number, title, TMDB score, Trakt score)
+- [x] T006 [US1] Implement ResponsiveContainer wrapper in src/components/media/EpisodeChart.tsx (width="100%", height={400})
+- [x] T007 [US1] Implement LineChart with XAxis and YAxis in src/components/media/EpisodeChart.tsx (XAxis dataKey="episode", YAxis domain=[0,10])
+- [x] T008 [US1] Add TMDB Line component in src/components/media/EpisodeChart.tsx (stroke="#3b82f6", connectNulls, animationDuration={300})
+- [x] T009 [US1] Add Trakt Line component in src/components/media/EpisodeChart.tsx (stroke="#ef4444", connectNulls, animationDuration={300})
+- [x] T010 [US1] Add CartesianGrid and Legend to chart in src/components/media/EpisodeChart.tsx
+- [x] T011 [US1] Implement data transformation call in src/components/media/EpisodeChart.tsx (use transformEpisodesToChartData from chart-data.ts)
+- [x] T012 [US1] Add loading state skeleton to EpisodeChart in src/components/media/EpisodeChart.tsx (show spinner when isLoading=true)
+- [x] T013 [US1] Add empty state and error handling to EpisodeChart in src/components/media/EpisodeChart.tsx (hide chart when episodes array is empty, show error message if chart fails to render)
+- [x] T014 [US1] Integrate EpisodeChart into MediaDetailPage in src/pages/MediaDetailPage.tsx (position above EpisodeRatingsDisplay table)
+- [x] T015 [US1] Pass episode data from MediaDetailPage to EpisodeChart in src/pages/MediaDetailPage.tsx (episodes={data.episodesBySeason[selectedSeason]})
+- [x] T016 [US1] Add conditional rendering for TV series only in src/pages/MediaDetailPage.tsx (only show chart when mediaType === 'tv' and episodesBySeason exists)
 
 **Checkpoint**: User Story 1 complete - Chart displays on TV series detail pages with TMDB and Trakt lines
 
@@ -66,9 +66,9 @@
 
 ### Implementation for User Story 2
 
-- [ ] T017 [US2] Add season change animation to EpisodeChart in src/components/media/EpisodeChart.tsx (add key={`chart-${seasonNumber}`} to force re-mount on season change)
-- [ ] T018 [US2] Verify chart responds to selectedSeason state changes in src/pages/MediaDetailPage.tsx (ensure episodes prop updates when season selector changes)
-- [ ] T019 [US2] Test season switching with manual verification (click through all seasons of Breaking Bad, verify chart updates correctly)
+- [x] T017 [US2] Add season change animation to EpisodeChart in src/components/media/EpisodeChart.tsx (add key={`chart-${seasonNumber}`} to force re-mount on season change)
+- [x] T018 [US2] Verify chart responds to selectedSeason state changes in src/pages/MediaDetailPage.tsx (ensure episodes prop updates when season selector changes)
+- [x] T019 [US2] Test season switching with manual verification (click through all seasons of Breaking Bad, verify chart updates correctly)
 
 **Checkpoint**: User Story 2 complete - Chart smoothly updates when switching seasons
 
@@ -82,11 +82,11 @@
 
 ### Implementation for User Story 3
 
-- [ ] T020 [P] [US3] Update custom tooltip to show "N/A" for missing ratings in src/components/media/EpisodeChart.tsx (check if value is null in tooltip)
-- [ ] T021 [P] [US3] Verify connectNulls={true} behavior in src/components/media/EpisodeChart.tsx (lines should connect across gaps, not break completely)
-- [ ] T022 [US3] Update transformEpisodesToChartData to preserve null values in src/lib/utils/chart-data.ts (do not filter out null scores, keep them as null)
-- [ ] T023 [US3] Add validation to prevent chart rendering when no episodes have any ratings in src/components/media/EpisodeChart.tsx (check chartData.length > 0)
-- [ ] T024 [US3] Test with real data: Find TV series with missing Trakt ratings and verify chart behavior
+- [x] T020 [P] [US3] Update custom tooltip to show "N/A" for missing ratings in src/components/media/EpisodeChart.tsx (check if value is null in tooltip)
+- [x] T021 [P] [US3] Verify connectNulls={true} behavior in src/components/media/EpisodeChart.tsx (lines should connect across gaps, not break completely)
+- [x] T022 [US3] Update transformEpisodesToChartData to preserve null values in src/lib/utils/chart-data.ts (do not filter out null scores, keep them as null)
+- [x] T023 [US3] Add validation to prevent chart rendering when no episodes have any ratings in src/components/media/EpisodeChart.tsx (check chartData.length > 0)
+- [x] T024 [US3] Test with real data: Find TV series with missing Trakt ratings and verify chart behavior
 
 **Checkpoint**: User Story 3 complete - Chart handles missing data gracefully, shows gaps clearly
 
@@ -96,15 +96,15 @@
 
 **Purpose**: Ensure chart adapts to dark mode and add visual polish
 
-- [ ] T025 [P] Add dark mode color detection in src/components/media/EpisodeChart.tsx (detect document.documentElement.classList.contains('dark'))
-- [ ] T026 [P] Create color state for dynamic theme switching in src/components/media/EpisodeChart.tsx (useState for tmdb, trakt, grid, text, background colors)
-- [ ] T027 [P] Implement MutationObserver for dark mode toggle in src/components/media/EpisodeChart.tsx (observe <html> classList changes)
-- [ ] T028 Apply dynamic colors to Line components in src/components/media/EpisodeChart.tsx (use state colors instead of hard-coded hex)
-- [ ] T029 Apply dynamic colors to XAxis, YAxis, CartesianGrid in src/components/media/EpisodeChart.tsx
-- [ ] T030 Update custom tooltip styling for dark mode in src/components/media/EpisodeChart.tsx (conditional Tailwind classes)
-- [ ] T031 Test dark mode toggle: Switch between light and dark mode, verify chart colors adapt correctly
-- [ ] T032 Test responsive design: Resize browser to 375px (mobile), 768px (tablet), 1024px (desktop), verify chart renders correctly
-- [ ] T033 Final integration test: Navigate to Breaking Bad, verify all features work (chart display, season switching, dark mode, missing data handling)
+- [x] T025 [P] Add dark mode color detection in src/components/media/EpisodeChart.tsx (detect document.documentElement.classList.contains('dark'))
+- [x] T026 [P] Create color state for dynamic theme switching in src/components/media/EpisodeChart.tsx (useState for tmdb, trakt, grid, text, background colors)
+- [x] T027 [P] Implement MutationObserver for dark mode toggle in src/components/media/EpisodeChart.tsx (observe <html> classList changes)
+- [x] T028 Apply dynamic colors to Line components in src/components/media/EpisodeChart.tsx (use state colors instead of hard-coded hex)
+- [x] T029 Apply dynamic colors to XAxis, YAxis, CartesianGrid in src/components/media/EpisodeChart.tsx
+- [x] T030 Update custom tooltip styling for dark mode in src/components/media/EpisodeChart.tsx (conditional Tailwind classes)
+- [x] T031 Test dark mode toggle: Switch between light and dark mode, verify chart colors adapt correctly
+- [x] T032 Test responsive design: Resize browser to 375px (mobile), 768px (tablet), 1024px (desktop), verify chart renders correctly
+- [x] T033 Final integration test: Navigate to Breaking Bad, verify all features work (chart display, season switching, dark mode, missing data handling)
 
 **Checkpoint**: All features complete and polished
 
