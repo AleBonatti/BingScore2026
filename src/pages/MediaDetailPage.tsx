@@ -11,6 +11,7 @@ import { useMediaAggregation } from '../hooks/useMediaAggregation';
 import MediaDetailHeader from '../components/media/MediaDetailHeader';
 import SeasonSelector from '../components/media/SeasonSelector';
 import EpisodeRatingsDisplay from '../components/media/EpisodeRatingsDisplay';
+import EpisodeChart from '../components/media/EpisodeChart';
 import type { MediaType } from '@/lib/types/domain';
 
 export default function MediaDetailPage() {
@@ -24,9 +25,11 @@ export default function MediaDetailPage() {
   const { data, isLoading, error } = useMediaAggregation(parsedTmdbId, validMediaType);
 
   // State for selected season
+  // Filter out Season 0 (specials) from display - data is preserved for future use
   const seasons = data?.episodesBySeason
     ? Object.keys(data.episodesBySeason)
         .map(Number)
+        .filter((season) => season > 0) // Exclude Season 0 (specials)
         .sort((a, b) => a - b)
     : [];
   const [selectedSeason, setSelectedSeason] = useState(seasons[0] || 1);
@@ -79,6 +82,17 @@ export default function MediaDetailPage() {
             selectedSeason={selectedSeason}
             onSelectSeason={setSelectedSeason}
           />
+
+          {/* Episode Chart (positioned above table) */}
+          <div className="mb-6">
+            <EpisodeChart
+              episodes={data.episodesBySeason[selectedSeason] || []}
+              seasonNumber={selectedSeason}
+              isLoading={isLoading}
+            />
+          </div>
+
+          {/* Episode Table */}
           <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden">
             <EpisodeRatingsDisplay
               episodes={data.episodesBySeason[selectedSeason] || []}
