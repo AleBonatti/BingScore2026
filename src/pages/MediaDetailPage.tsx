@@ -9,7 +9,6 @@ import toast from 'react-hot-toast';
 import { Loader } from 'lucide-react';
 import { useMediaAggregation } from '../hooks/useMediaAggregation';
 import MediaDetailHeader from '../components/media/MediaDetailHeader';
-import OverallRatingsPanel from '../components/media/OverallRatingsPanel';
 import SeasonSelector from '../components/media/SeasonSelector';
 import EpisodeRatingsDisplay from '../components/media/EpisodeRatingsDisplay';
 import type { MediaType } from '@/lib/types/domain';
@@ -68,8 +67,8 @@ export default function MediaDetailPage() {
         overview={data.overview}
         posterUrl={data.posterUrl}
         mediaType={data.mediaType}
+        ratings={data}
       />
-      <OverallRatingsPanel ratings={data} />
 
       {/* Episode Ratings Section (TV Series Only) */}
       {data.mediaType === 'tv' && data.episodesBySeason && seasons.length > 0 && (
