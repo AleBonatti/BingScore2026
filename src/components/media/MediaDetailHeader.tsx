@@ -36,7 +36,7 @@ export default function MediaDetailHeader({
             {mediaType === 'movie' ? 'Movie' : 'TV Series'}
           </span>
         </div>
-        <h1 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-2">
+        <h1 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-ivory mb-2">
           {title}
         </h1>
         {year && <p className="text-lg text-gray-600 dark:text-gray-400 mb-4">{year}</p>}
@@ -46,7 +46,7 @@ export default function MediaDetailHeader({
 
         {/* Ratings Section */}
         <div>
-          {/* <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Ratings</h2> */}
+          {/* <h2 className="text-2xl font-bold text-gray-900 dark:text-ivory mb-4">Ratings</h2> */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <RatingCard rating={ratings.overall.imdb || null} />
             <RatingCard rating={ratings.overall.tmdb || null} />

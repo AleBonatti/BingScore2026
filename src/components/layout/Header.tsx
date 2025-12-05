@@ -36,10 +36,10 @@ export default function Header() {
   };
 
   return (
-    <header className="bg-white dark:bg-gray-800 shadow-sm">
+    <header className="bg-white dark:bg-transparent">
       <div className="max-w-7xl mx-auto px-4 py-4">
         <div className="flex items-center justify-between">
-          <Link to="/" className="text-2xl font-bold text-gray-900 dark:text-white">
+          <Link to="/" className="text-3xl font-bold text-gray-900 dark:text-tuscan-sun">
             BingeScore
           </Link>
           <nav className="flex items-center gap-6">
@@ -53,7 +53,7 @@ export default function Header() {
               href="#about"
               className="text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors"
             >
-              About
+              Disclaimer
             </a>
             <button
               onClick={toggleDarkMode}
