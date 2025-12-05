@@ -31,10 +31,10 @@ export default function RatingCard({ rating }: RatingCardProps) {
   return (
     <motion.div
       whileHover={{ scale: 1.02 }}
-      className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6 transition-shadow hover:shadow-lg"
+      className="bg-white dark:bg-shadow-gray rounded-xl shadow-md p-6 transition-shadow hover:shadow-lg"
     >
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-ivory">
           {sourceLabels[rating.source]}
         </h3>
         <Star className="w-5 h-5 text-yellow-500 fill-yellow-500" />

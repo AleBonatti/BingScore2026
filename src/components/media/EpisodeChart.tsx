@@ -41,7 +41,8 @@ function CustomTooltip({ active, payload, label }: any) {
     return null;
   }
 
-  const isDark = typeof document !== 'undefined' && document.documentElement.classList.contains('dark');
+  const isDark =
+    typeof document !== 'undefined' && document.documentElement.classList.contains('dark');
 
   // Extract episode title from payload (it's in the data point)
   const episodeTitle = payload[0]?.payload?.title || '';
@@ -49,11 +50,15 @@ function CustomTooltip({ active, payload, label }: any) {
   return (
     <div
       className={`p-3 border rounded shadow-lg ${
-        isDark ? 'bg-slate-800 border-slate-600 text-white' : 'bg-white border-gray-300 text-gray-900'
+        isDark
+          ? 'bg-slate-800 border-slate-600 text-white'
+          : 'bg-white border-gray-300 text-gray-900'
       }`}
     >
       <p className="text-sm font-semibold mb-1">Episode {label}</p>
-      {episodeTitle && <p className="text-xs text-gray-600 dark:text-gray-400 mb-2">{episodeTitle}</p>}
+      {episodeTitle && (
+        <p className="text-xs text-gray-600 dark:text-gray-400 mb-2">{episodeTitle}</p>
+      )}
       {payload.map((entry: any, index: number) => (
         <p key={index} className="text-xs" style={{ color: entry.color }}>
           {entry.value !== null && entry.value !== undefined
@@ -65,7 +70,11 @@ function CustomTooltip({ active, payload, label }: any) {
   );
 }
 
-export default function EpisodeChart({ episodes, seasonNumber, isLoading = false }: EpisodeChartProps) {
+export default function EpisodeChart({
+  episodes,
+  seasonNumber,
+  isLoading = false,
+}: EpisodeChartProps) {
   const [chartData, setChartData] = useState<EpisodeChartPoint[]>([]);
   const [colors, setColors] = useState<ChartColors>({
     tmdb: '#3b82f6',
@@ -96,7 +105,7 @@ export default function EpisodeChart({ episodes, seasonNumber, isLoading = false
           trakt: '#f87171',
           grid: '#334155',
           text: '#f1f5f9',
-          background: '#1e293b',
+          background: '#242423',
         });
       } else {
         setColors({
