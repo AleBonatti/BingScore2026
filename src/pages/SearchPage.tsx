@@ -25,10 +25,10 @@ export default function SearchPage() {
   return (
     <div className="max-w-4xl mx-auto px-4 py-12">
       <div className="text-center mb-8">
-        <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-2">
+        <h1 className="text-4xl font-light text-gray-900 dark:text-ivory mb-2">
           Find Your Next Binge
         </h1>
-        <p className="text-gray-600 dark:text-gray-400">
+        <p className="text-gray-600 dark:text-ivory">
           Search for TV series or movies and compare ratings from TMDB, IMDb, and Trakt
         </p>
       </div>

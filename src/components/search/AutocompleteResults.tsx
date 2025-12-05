@@ -22,7 +22,7 @@ export default function AutocompleteResults({ results, isVisible }: Autocomplete
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: -10 }}
         transition={{ duration: 0.2 }}
-        className="absolute z-10 mt-2 w-full bg-white dark:bg-gray-800 rounded-lg shadow-lg max-h-96 overflow-y-auto"
+        className="absolute z-10 mt-2 w-full bg-white dark:bg-shadow-gray rounded-lg shadow-lg max-h-96 overflow-y-auto"
       >
         <div className="p-2">
           {results.map((result) => (

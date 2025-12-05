@@ -76,7 +76,7 @@ export default function MediaDetailPage() {
       {/* Episode Ratings Section (TV Series Only) */}
       {data.mediaType === 'tv' && data.episodesBySeason && seasons.length > 0 && (
         <div className="mt-8">
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Episode Ratings</h2>
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-ivory mb-4">Episode Ratings</h2>
           <SeasonSelector
             seasons={seasons}
             selectedSeason={selectedSeason}

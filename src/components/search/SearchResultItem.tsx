@@ -37,7 +37,7 @@ export default function SearchResultItem({ result }: SearchResultItemProps) {
         </div>
       )}
       <div className="flex-1 min-w-0">
-        <h3 className="text-sm font-medium text-gray-900 dark:text-white truncate">
+        <h3 className="text-sm font-medium text-gray-900 dark:text-ivory truncate">
           {result.title}
         </h3>
         <p className="text-xs text-gray-500 dark:text-gray-400">
