@@ -1,11 +1,13 @@
-# BingeScore Phase 1 - Search & Ratings Aggregation
+# BingeScore - TV & Movie Ratings Aggregator
 
-A full-stack TypeScript web application that searches for movies and TV series, aggregating ratings from multiple sources (TMDB, OMDb/IMDb, and Trakt).
+A full-stack TypeScript web application that searches for movies and TV series, aggregating ratings from multiple sources (TMDB, OMDb/IMDb, and Trakt) with beautiful episode-level visualizations.
 
 ## Tech Stack
 
-- **Frontend**: React 18 + Vite + Tailwind CSS v4 + TanStack Query
+- **Frontend**: React 18 + Vite + Tailwind CSS v4 + TanStack Query + Recharts + Framer Motion
 - **Backend**: Fastify + TypeScript
+- **Typography**: Geist Font (self-hosted)
+- **Testing**: Vitest + React Testing Library
 - **External APIs**: TMDB, OMDb, Trakt
 
 ## Prerequisites
@@ -74,9 +76,10 @@ npm run server:dev
 
 ## Available Scripts
 
-- `npm run dev` - Start Vite frontend dev server
-- `npm run server:dev` - Start Fastify backend dev server
-- `npm test` - Run all tests
+- `npm run dev` - Start Vite frontend dev server (http://localhost:5173)
+- `npm run server:dev` - Start Fastify backend dev server (http://localhost:4000)
+- `npm test` - Run test suite (29 tests)
+- `npm run test:watch` - Run tests in watch mode
 - `npm run lint` - Lint code with ESLint
 - `npm run format` - Format code with Prettier
 - `npm run typecheck` - Check TypeScript types
