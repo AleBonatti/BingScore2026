@@ -6,7 +6,7 @@ import { describe, it, expect } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 import AutocompleteResults from './AutocompleteResults';
-import type { SearchResult } from '@/lib/types/domain';
+import type { SearchResult } from '../../../lib/types/domain.ts';
 
 // Wrapper for components that use react-router
 const RouterWrapper = ({ children }: { children: React.ReactNode }) => (
@@ -34,38 +34,34 @@ describe('AutocompleteResults', () => {
   ];
 
   it('should not render when not visible', () => {
-    const { container } = render(
-      <AutocompleteResults results={mockResults} isVisible={false} />,
-      { wrapper: RouterWrapper }
-    );
+    const { container } = render(<AutocompleteResults results={mockResults} isVisible={false} />, {
+      wrapper: RouterWrapper,
+    });
 
     expect(container.firstChild).toBeNull();
   });
 
   it('should not render when results are empty', () => {
-    const { container } = render(
-      <AutocompleteResults results={[]} isVisible={true} />,
-      { wrapper: RouterWrapper }
-    );
+    const { container } = render(<AutocompleteResults results={[]} isVisible={true} />, {
+      wrapper: RouterWrapper,
+    });
 
     expect(container.firstChild).toBeNull();
   });
 
   it('should render results when visible and has data', () => {
-    render(
-      <AutocompleteResults results={mockResults} isVisible={true} />,
-      { wrapper: RouterWrapper }
-    );
+    render(<AutocompleteResults results={mockResults} isVisible={true} />, {
+      wrapper: RouterWrapper,
+    });
 
     expect(screen.getByText('Breaking Bad')).toBeInTheDocument();
     expect(screen.getByText('Better Call Saul')).toBeInTheDocument();
   });
 
   it('should render all search results', () => {
-    render(
-      <AutocompleteResults results={mockResults} isVisible={true} />,
-      { wrapper: RouterWrapper }
-    );
+    render(<AutocompleteResults results={mockResults} isVisible={true} />, {
+      wrapper: RouterWrapper,
+    });
 
     // SearchResultItem renders as clickable divs, not links
     expect(screen.getByText('Breaking Bad')).toBeInTheDocument();
@@ -75,10 +71,9 @@ describe('AutocompleteResults', () => {
   });
 
   it('should render with correct structure', () => {
-    const { container } = render(
-      <AutocompleteResults results={mockResults} isVisible={true} />,
-      { wrapper: RouterWrapper }
-    );
+    const { container } = render(<AutocompleteResults results={mockResults} isVisible={true} />, {
+      wrapper: RouterWrapper,
+    });
 
     // Should have absolute positioning and shadow
     const resultsContainer = container.querySelector('.absolute');
@@ -89,20 +84,18 @@ describe('AutocompleteResults', () => {
   it('should handle single result', () => {
     const singleResult: SearchResult[] = [mockResults[0]];
 
-    render(
-      <AutocompleteResults results={singleResult} isVisible={true} />,
-      { wrapper: RouterWrapper }
-    );
+    render(<AutocompleteResults results={singleResult} isVisible={true} />, {
+      wrapper: RouterWrapper,
+    });
 
     expect(screen.getByText('Breaking Bad')).toBeInTheDocument();
     expect(screen.queryByText('Better Call Saul')).not.toBeInTheDocument();
   });
 
   it('should use unique keys for each result', () => {
-    const { container } = render(
-      <AutocompleteResults results={mockResults} isVisible={true} />,
-      { wrapper: RouterWrapper }
-    );
+    const { container } = render(<AutocompleteResults results={mockResults} isVisible={true} />, {
+      wrapper: RouterWrapper,
+    });
 
     // Each SearchResultItem should be rendered as clickable divs
     const resultItems = container.querySelectorAll('.cursor-pointer');
