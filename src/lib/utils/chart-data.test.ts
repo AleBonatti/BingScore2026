@@ -4,7 +4,7 @@
 
 import { describe, it, expect } from 'vitest';
 import { transformEpisodesToChartData } from './chart-data';
-import type { EpisodeRatingEntry } from '../types/domain';
+import type { EpisodeRatingEntry } from '@/lib/types/domain';
 
 describe('transformEpisodesToChartData', () => {
   it('should transform valid episode data correctly', () => {
@@ -63,7 +63,7 @@ describe('transformEpisodesToChartData', () => {
     const episodes: EpisodeRatingEntry[] = [
       {
         seasonNumber: 1,
-        episodeNumber: 1,
+        episodeNumber: 5,
         title: '',
         tmdbScore: 8.5,
         traktScore: 8.2,
@@ -72,7 +72,9 @@ describe('transformEpisodesToChartData', () => {
 
     const result = transformEpisodesToChartData(episodes);
 
+    // Should use re-indexed number (1) not original (5)
     expect(result[0].title).toBe('Episode 1');
+    expect(result[0].episode).toBe(1);
   });
 
   it('should sort episodes by episode number', () => {
@@ -144,5 +146,44 @@ describe('transformEpisodesToChartData', () => {
 
     expect(result[0].tmdb).toBeNull();
     expect(result[0].trakt).toBeNull();
+  });
+
+  it('should re-index episodes to always start from 1', () => {
+    // Simulating episodes with non-sequential or high episode numbers
+    const episodes: EpisodeRatingEntry[] = [
+      {
+        seasonNumber: 15,
+        episodeNumber: 250,
+        title: 'First Episode of Season',
+        tmdbScore: 8.5,
+        traktScore: 8.2,
+      },
+      {
+        seasonNumber: 15,
+        episodeNumber: 251,
+        title: 'Second Episode of Season',
+        tmdbScore: 8.7,
+        traktScore: 8.4,
+      },
+      {
+        seasonNumber: 15,
+        episodeNumber: 252,
+        title: 'Third Episode of Season',
+        tmdbScore: 8.9,
+        traktScore: 8.6,
+      },
+    ];
+
+    const result = transformEpisodesToChartData(episodes);
+
+    // Episodes should be re-indexed to 1, 2, 3 regardless of original numbers
+    expect(result[0].episode).toBe(1);
+    expect(result[1].episode).toBe(2);
+    expect(result[2].episode).toBe(3);
+
+    // Titles should be preserved
+    expect(result[0].title).toBe('First Episode of Season');
+    expect(result[1].title).toBe('Second Episode of Season');
+    expect(result[2].title).toBe('Third Episode of Season');
   });
 });

@@ -47,24 +47,24 @@ export default function EpisodeRatingsDisplay({
               key={`${episode.seasonNumber}-${episode.episodeNumber}`}
               className="hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
             >
-              <td className="px-4 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-ivory">
+              <td className="px-4 py-2 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-ivory">
                 {episode.episodeNumber}
               </td>
-              <td className="px-4 py-4 text-sm text-gray-700 dark:text-gray-300">
+              <td className="px-4 py-2 text-sm text-gray-700 dark:text-gray-300">
                 {episode.title || 'Unknown'}
               </td>
-              <td className="px-4 py-4 whitespace-nowrap text-sm text-center">
+              <td className="px-4 py-2 whitespace-nowrap text-sm text-center">
                 {episode.tmdbScore !== null && episode.tmdbScore !== undefined ? (
-                  <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200">
+                  <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200">
                     {episode.tmdbScore.toFixed(1)}
                   </span>
                 ) : (
                   <span className="text-gray-400 dark:text-gray-500">N/A</span>
                 )}
               </td>
-              <td className="px-4 py-4 whitespace-nowrap text-sm text-center">
+              <td className="px-4 py-2 whitespace-nowrap text-sm text-center">
                 {episode.traktScore !== null && episode.traktScore !== undefined ? (
-                  <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200">
+                  <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200">
                     {episode.traktScore.toFixed(1)}
                   </span>
                 ) : (

@@ -12,7 +12,7 @@ import MediaDetailPage from './pages/MediaDetailPage';
 export default function App() {
   return (
     <BrowserRouter>
-      <div className="min-h-screen flex flex-col bg-gray-50 dark:bg-grafite">
+      <div className="min-h-screen flex flex-col bg-gray-100 dark:bg-grafite">
         <Header />
         <main className="grow">
           <Routes>

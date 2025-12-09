@@ -45,12 +45,15 @@ export interface EpisodeChartPoint {
 export function transformEpisodesToChartData(
   episodes: EpisodeRatingEntry[]
 ): EpisodeChartPoint[] {
-  return episodes
-    .map((ep) => ({
-      episode: ep.episodeNumber,
-      title: ep.title || `Episode ${ep.episodeNumber}`, // Fallback for missing titles
-      tmdb: ep.tmdbScore ?? null, // Convert undefined to null
-      trakt: ep.traktScore ?? null, // Convert undefined to null
-    }))
-    .sort((a, b) => a.episode - b.episode); // Ensure correct X-axis order
+  // First, sort episodes by their episode number
+  const sorted = episodes.slice().sort((a, b) => a.episodeNumber - b.episodeNumber);
+
+  // Transform and re-index to ensure episodes always start from 1
+  // This handles cases where API might return absolute episode numbers
+  return sorted.map((ep, index) => ({
+    episode: index + 1, // Always start from 1, increment by 1
+    title: ep.title || `Episode ${index + 1}`, // Use re-indexed number in fallback
+    tmdb: ep.tmdbScore ?? null, // Convert undefined to null
+    trakt: ep.traktScore ?? null, // Convert undefined to null
+  }));
 }

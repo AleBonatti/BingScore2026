@@ -83,6 +83,45 @@ export default function MediaDetailPage() {
             onSelectSeason={setSelectedSeason}
           />
 
+          {/* Season Average Ratings */}
+          {(() => {
+            const episodes = data.episodesBySeason[selectedSeason] || [];
+
+            // Calculate TMDB average
+            const tmdbScores = episodes
+              .map((ep) => ep.tmdbScore)
+              .filter((score): score is number => score != null);
+            const tmdbAverage =
+              tmdbScores.length > 0
+                ? tmdbScores.reduce((sum, score) => sum + score, 0) / tmdbScores.length
+                : null;
+
+            // Calculate Trakt average
+            const traktScores = episodes
+              .map((ep) => ep.traktScore)
+              .filter((score): score is number => score != null);
+            const traktAverage =
+              traktScores.length > 0
+                ? traktScores.reduce((sum, score) => sum + score, 0) / traktScores.length
+                : null;
+
+            return tmdbAverage !== null || traktAverage !== null ? (
+              <div className="mt-4 mb-2 text-center">
+                <span className="text-base text-gray-700 dark:text-gray-300">Season average: </span>
+                {tmdbAverage !== null && (
+                  <span className="font-bold text-blue-600 dark:text-blue-400 mx-2">
+                    TMDB: {tmdbAverage.toFixed(1)}/10
+                  </span>
+                )}
+                {traktAverage !== null && (
+                  <span className="font-bold text-red-600 dark:text-red-400 mx-2">
+                    Trakt: {traktAverage.toFixed(1)}/10
+                  </span>
+                )}
+              </div>
+            ) : null;
+          })()}
+
           {/* Episode Chart (positioned above table) */}
           <div className="mb-6">
             <EpisodeChart

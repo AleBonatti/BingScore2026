@@ -28,10 +28,10 @@ export default function SeasonSelector({
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             onClick={() => onSelectSeason(season)}
-            className={`px-4 py-2 rounded-full font-medium transition-colors ${
+            className={`px-3 py-1 rounded-md text-sm transition-colors ${
               selectedSeason === season
-                ? 'bg-blue-600 text-white shadow-md'
-                : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600'
+                ? 'bg-tuscan-sun text-grafite shadow-md'
+                : 'bg-gray-200 dark:bg-shadow-gray text-dust-gray dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600'
             }`}
           >
             Season {season}

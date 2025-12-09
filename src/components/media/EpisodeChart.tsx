@@ -157,7 +157,7 @@ export default function EpisodeChart({
       <ResponsiveContainer width="100%" height={400}>
         <LineChart
           data={chartData}
-          margin={{ top: 5, right: 30, left: 0, bottom: 5 }}
+          margin={{ top: 40, right: 30, left: 0, bottom: 10 }}
           key={`chart-${seasonNumber}`}
           style={{ backgroundColor: colors.background }}
         >
