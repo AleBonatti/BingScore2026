@@ -3,14 +3,7 @@
 /* Geist Sans Font */
 @font-face {
   font-family: 'Geist';
-  src: url('/src/assets/fonts/Geist-Light.woff2') format('woff2');
-  font-weight: 300;
-  font-style: normal;
-  font-display: swap;
-}
-@font-face {
-  font-family: 'Geist';
-  src: url('/src/assets/fonts/Geist-Regular.woff2') format('woff2');
+  src: url('./assets/fonts/Geist-Regular.woff2') format('woff2');
   font-weight: 400;
   font-style: normal;
   font-display: swap;
@@ -18,7 +11,7 @@
 
 @font-face {
   font-family: 'Geist';
-  src: url('/src/assets/fonts/Geist-Medium.woff2') format('woff2');
+  src: url('./assets/fonts/Geist-Medium.woff2') format('woff2');
   font-weight: 500;
   font-style: normal;
   font-display: swap;
@@ -26,7 +19,7 @@
 
 @font-face {
   font-family: 'Geist';
-  src: url('/src/assets/fonts/Geist-SemiBold.woff2') format('woff2');
+  src: url('./assets/fonts/Geist-SemiBold.woff2') format('woff2');
   font-weight: 600;
   font-style: normal;
   font-display: swap;
@@ -34,7 +27,7 @@
 
 @font-face {
   font-family: 'Geist';
-  src: url('/src/assets/fonts/Geist-Bold.woff2') format('woff2');
+  src: url('./assets/fonts/Geist-Bold.woff2') format('woff2');
   font-weight: 700;
   font-style: normal;
   font-display: swap;
@@ -43,7 +36,7 @@
 /* Geist Mono Font */
 @font-face {
   font-family: 'Geist Mono';
-  src: url('/src/assets/fonts/GeistMono-Regular.woff2') format('woff2');
+  src: url('./assets/fonts/GeistMono-Regular.woff2') format('woff2');
   font-weight: 400;
   font-style: normal;
   font-display: swap;
@@ -51,7 +44,7 @@
 
 @font-face {
   font-family: 'Geist Mono';
-  src: url('/src/assets/fonts/GeistMono-Medium.woff2') format('woff2');
+  src: url('./assets/fonts/GeistMono-Medium.woff2') format('woff2');
   font-weight: 500;
   font-style: normal;
   font-display: swap;
@@ -59,7 +52,7 @@
 
 @font-face {
   font-family: 'Geist Mono';
-  src: url('/src/assets/fonts/GeistMono-SemiBold.woff2') format('woff2');
+  src: url('./assets/fonts/GeistMono-SemiBold.woff2') format('woff2');
   font-weight: 600;
   font-style: normal;
   font-display: swap;
@@ -67,7 +60,7 @@
 
 @font-face {
   font-family: 'Geist Mono';
-  src: url('/src/assets/fonts/GeistMono-Bold.woff2') format('woff2');
+  src: url('./assets/fonts/GeistMono-Bold.woff2') format('woff2');
   font-weight: 700;
   font-style: normal;
   font-display: swap;
