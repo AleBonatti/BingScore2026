@@ -4,6 +4,7 @@
  */
 
 import type { OverallRating } from '@/lib/types/domain.js';
+import type { OmdbResponse } from '@/lib/types/providers.js';
 
 export interface OmdbProvider {
   getOverallRatingByImdbId(imdbId: string): Promise<OverallRating | null>;
@@ -20,7 +21,7 @@ export function createOmdbProvider(apiKey: string): OmdbProvider {
         throw new Error(`OMDb API error: ${response.statusText}`);
       }
 
-      const data = await response.json();
+      const data = (await response.json()) as OmdbResponse;
 
       if (data.Response === 'False') {
         console.warn(`OMDb error for ${imdbId}:`, data.Error);
