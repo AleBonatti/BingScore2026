@@ -1,18 +1,17 @@
 {
+  "extends": "../tsconfig.json",
   "compilerOptions": {
-    "target": "ES2022",
     "module": "CommonJS",
+    "target": "ES2022",
     "lib": ["ES2022"],
-    "skipLibCheck": true,
-    "strict": true,
-    "esModuleInterop": true,
     "moduleResolution": "node",
-    "resolveJsonModule": true,
+    "esModuleInterop": true,
     "baseUrl": "..",
     "paths": {
       "@/*": ["./*"]
-    }
+    },
+    "outDir": "./.vercel/output/functions"
   },
-  "include": ["./**/*"],
-  "exclude": ["node_modules"]
+  "include": ["**/*.ts", "../server/**/*.ts", "../lib/**/*.ts"],
+  "exclude": ["node_modules", "../dist", "../src"]
 }

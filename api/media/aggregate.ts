@@ -3,7 +3,6 @@
  * Vercel serverless function for aggregating ratings from multiple providers
  */
 
-import '../_helpers/register-paths';
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { createTmdbProvider } from '../../server/providers/tmdb';
 import { createOmdbProvider } from '../../server/providers/omdb';

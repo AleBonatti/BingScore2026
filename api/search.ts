@@ -3,7 +3,6 @@
  * Vercel serverless function for TMDB search
  */
 
-import './_helpers/register-paths';
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { createTmdbProvider } from '../server/providers/tmdb';
 
