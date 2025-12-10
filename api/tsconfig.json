@@ -1,17 +1,16 @@
 {
   "extends": "../tsconfig.json",
   "compilerOptions": {
-    "module": "CommonJS",
+    "module": "ESNext",
     "target": "ES2022",
     "lib": ["ES2022"],
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "esModuleInterop": true,
     "baseUrl": "..",
     "paths": {
       "@/*": ["./*"]
-    },
-    "outDir": "./.vercel/output/functions"
+    }
   },
-  "include": ["**/*.ts", "../server/**/*.ts", "../lib/**/*.ts"],
-  "exclude": ["node_modules", "../dist", "../src"]
+  "include": ["**/*.ts", "../lib/**/*.ts"],
+  "exclude": ["node_modules", "../dist", "../src", "../server"]
 }
