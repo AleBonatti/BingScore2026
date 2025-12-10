@@ -8,9 +8,9 @@ import type {
   MediaType,
   OverallRating,
   EpisodeRatingEntry,
-} from '../../lib/types/domain';
-import type { TmdbExternalIds } from '../../lib/types/providers';
-import { formatReleaseYear } from '../../lib/utils/format';
+} from '../../lib/types/domain.js';
+import type { TmdbExternalIds } from '../../lib/types/providers.js';
+import { formatReleaseYear } from '../../lib/utils/format.js';
 
 export interface TmdbProvider {
   searchMulti(query: string): Promise<SearchResult[]>;

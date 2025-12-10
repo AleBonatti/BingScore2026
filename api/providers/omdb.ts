@@ -3,7 +3,7 @@
  * Uses relative imports instead of path aliases
  */
 
-import type { OverallRating } from '../../lib/types/domain';
+import type { OverallRating } from '../../lib/types/domain.js';
 
 export interface OmdbProvider {
   getOverallRatingByImdbId(imdbId: string): Promise<OverallRating | null>;

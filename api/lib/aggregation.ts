@@ -3,11 +3,11 @@
  * Uses relative imports instead of path aliases
  */
 
-import type { MediaType, AggregatedRatings, UnifiedMediaId } from '../../lib/types/domain';
-import type { TmdbProvider } from '../providers/tmdb';
-import type { OmdbProvider } from '../providers/omdb';
-import type { TraktProvider } from '../providers/trakt';
-import { mergeEpisodeRatings } from '../../lib/domain/episode-merge';
+import type { MediaType, AggregatedRatings, UnifiedMediaId } from '../../lib/types/domain.js';
+import type { TmdbProvider } from '../providers/tmdb.js';
+import type { OmdbProvider } from '../providers/omdb.js';
+import type { TraktProvider } from '../providers/trakt.js';
+import { mergeEpisodeRatings } from '../../lib/domain/episode-merge.js';
 
 export interface AggregationDependencies {
   tmdbProvider: TmdbProvider;

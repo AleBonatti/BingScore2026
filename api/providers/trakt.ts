@@ -3,7 +3,7 @@
  * Uses relative imports instead of path aliases
  */
 
-import type { MediaType, OverallRating, EpisodeRatingEntry } from '../../lib/types/domain';
+import type { MediaType, OverallRating, EpisodeRatingEntry } from '../../lib/types/domain.js';
 
 export interface TraktProvider {
   resolveTraktId(tmdbId: number, mediaType: MediaType): Promise<string | null>;
