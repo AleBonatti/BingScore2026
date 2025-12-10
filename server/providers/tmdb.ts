@@ -9,12 +9,17 @@ import type {
   OverallRating,
   EpisodeRatingEntry,
 } from '@/lib/types/domain.js';
-import type { TmdbExternalIds } from '@/lib/types/providers.js';
+import type {
+  TmdbExternalIds,
+  TmdbMediaDetails,
+  TmdbSearchResultItem,
+  TmdbSeasonDetails,
+} from '@/lib/types/providers.js';
 import { formatReleaseYear } from '@/lib/utils/format.js';
 
 export interface TmdbProvider {
   searchMulti(query: string): Promise<SearchResult[]>;
-  getMediaDetails(tmdbId: number, mediaType: MediaType): Promise<any>;
+  getMediaDetails(tmdbId: number, mediaType: MediaType): Promise<TmdbMediaDetails>;
   getExternalIds(tmdbId: number, mediaType: MediaType): Promise<TmdbExternalIds>;
   getOverallRating(tmdbId: number, mediaType: MediaType): Promise<OverallRating>;
   getEpisodeRatings(tmdbId: number): Promise<EpisodeRatingEntry[]>;
@@ -34,19 +39,21 @@ export function createTmdbProvider(apiKey: string): TmdbProvider {
         throw new Error(`TMDB API error: ${response.statusText}`);
       }
 
-      const data = await response.json();
+      const data = (await response.json()) as { results?: TmdbSearchResultItem[] };
       const results = data.results || [];
 
       // Filter and normalize results
       return results
-        .filter((item: any) => item.media_type === 'movie' || item.media_type === 'tv')
-        .map((item: any) => ({
+        .filter((item): item is TmdbSearchResultItem & { media_type: 'movie' | 'tv' } =>
+          item.media_type === 'movie' || item.media_type === 'tv'
+        )
+        .map((item) => ({
           provider: 'tmdb' as const,
           tmdbId: item.id,
           imdbId: null,
           mediaType: item.media_type,
-          title: item.title || item.name,
-          originalTitle: item.original_title || item.original_name,
+          title: item.title || item.name || 'Unknown',
+          originalTitle: item.original_title || item.original_name || undefined,
           year: item.release_date
             ? parseInt(formatReleaseYear(item.release_date), 10)
             : item.first_air_date
@@ -62,7 +69,7 @@ export function createTmdbProvider(apiKey: string): TmdbProvider {
     }
   };
 
-  const getMediaDetails = async (tmdbId: number, mediaType: MediaType): Promise<any> => {
+  const getMediaDetails = async (tmdbId: number, mediaType: MediaType): Promise<TmdbMediaDetails> => {
     try {
       const endpoint = mediaType === 'movie' ? 'movie' : 'tv';
       const response = await fetch(`${TMDB_BASE_URL}/${endpoint}/${tmdbId}?api_key=${apiKey}`);
@@ -71,7 +78,7 @@ export function createTmdbProvider(apiKey: string): TmdbProvider {
         throw new Error(`TMDB API error: ${response.statusText}`);
       }
 
-      return await response.json();
+      return (await response.json()) as TmdbMediaDetails;
     } catch (error) {
       console.error('TMDB getMediaDetails error:', error);
       throw error;
@@ -89,7 +96,7 @@ export function createTmdbProvider(apiKey: string): TmdbProvider {
         throw new Error(`TMDB API error: ${response.statusText}`);
       }
 
-      return await response.json();
+      return (await response.json()) as TmdbExternalIds;
     } catch (error) {
       console.error('TMDB getExternalIds error:', error);
       throw error;
@@ -121,11 +128,11 @@ export function createTmdbProvider(apiKey: string): TmdbProvider {
       }
 
       // Fetch all seasons in parallel
-      const seasonPromises = [];
+      const seasonPromises: Promise<TmdbSeasonDetails | null>[] = [];
       for (let seasonNum = 1; seasonNum <= numberOfSeasons; seasonNum++) {
         seasonPromises.push(
           fetch(`${TMDB_BASE_URL}/tv/${tmdbId}/season/${seasonNum}?api_key=${apiKey}`)
-            .then((res) => (res.ok ? res.json() : null))
+            .then((res) => (res.ok ? res.json() as Promise<TmdbSeasonDetails> : null))
             .catch(() => null)
         );
       }
@@ -137,7 +144,7 @@ export function createTmdbProvider(apiKey: string): TmdbProvider {
       seasons.forEach((season) => {
         if (!season || !season.episodes) return;
 
-        season.episodes.forEach((episode: any) => {
+        season.episodes.forEach((episode) => {
           episodes.push({
             seasonNumber: episode.season_number,
             episodeNumber: episode.episode_number,

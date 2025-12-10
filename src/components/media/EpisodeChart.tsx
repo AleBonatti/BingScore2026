@@ -32,11 +32,24 @@ interface ChartColors {
   background: string;
 }
 
+interface TooltipPayloadEntry {
+  color: string;
+  name: string;
+  value: number | null | undefined;
+  payload?: { title?: string };
+}
+
+interface CustomTooltipProps {
+  active?: boolean;
+  payload?: TooltipPayloadEntry[];
+  label?: string | number;
+}
+
 /**
  * Custom tooltip component for episode chart
  * Shows episode number, title, and ratings from both providers
  */
-function CustomTooltip({ active, payload, label }: any) {
+function CustomTooltip({ active, payload, label }: CustomTooltipProps) {
   if (!active || !payload || payload.length === 0) {
     return null;
   }
@@ -59,7 +72,7 @@ function CustomTooltip({ active, payload, label }: any) {
       {episodeTitle && (
         <p className="text-xs text-gray-600 dark:text-gray-400 mb-2">{episodeTitle}</p>
       )}
-      {payload.map((entry: any, index: number) => (
+      {payload.map((entry, index: number) => (
         <p key={index} className="text-xs" style={{ color: entry.color }}>
           {entry.value !== null && entry.value !== undefined
             ? `${entry.name}: ${(entry.value as number).toFixed(1)}/10`

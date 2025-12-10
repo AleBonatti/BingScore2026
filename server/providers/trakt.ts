@@ -4,6 +4,7 @@
  */
 
 import type { MediaType, OverallRating, EpisodeRatingEntry } from '@/lib/types/domain.js';
+import type { TraktSearchResult, TraktRating, TraktSeasonWithEpisodes } from '@/lib/types/providers.js';
 
 export interface TraktProvider {
   resolveTraktId(tmdbId: number, mediaType: MediaType): Promise<string | null>;
@@ -31,13 +32,17 @@ export function createTraktProvider(clientId: string): TraktProvider {
         throw new Error(`Trakt API error: ${response.statusText}`);
       }
 
-      const results = await response.json();
+      const results = (await response.json()) as TraktSearchResult[];
 
       if (!results || results.length === 0) {
         return null;
       }
 
       const item = results[0];
+      if (!item) {
+        return null;
+      }
+
       const ids = item.movie?.ids || item.show?.ids;
 
       return ids?.slug || ids?.trakt?.toString() || null;
@@ -61,7 +66,7 @@ export function createTraktProvider(clientId: string): TraktProvider {
         throw new Error(`Trakt API error: ${response.statusText}`);
       }
 
-      const data = await response.json();
+      const data = (await response.json()) as TraktRating;
 
       if (!data || typeof data.rating !== 'number') {
         return null;
@@ -88,7 +93,7 @@ export function createTraktProvider(clientId: string): TraktProvider {
         throw new Error(`Trakt API error: ${response.statusText}`);
       }
 
-      const seasons = await response.json();
+      const seasons = (await response.json()) as TraktSeasonWithEpisodes[];
 
       if (!seasons || !Array.isArray(seasons)) {
         return [];
@@ -96,10 +101,10 @@ export function createTraktProvider(clientId: string): TraktProvider {
 
       const episodes: EpisodeRatingEntry[] = [];
 
-      seasons.forEach((season: any) => {
+      seasons.forEach((season) => {
         if (!season.episodes || !Array.isArray(season.episodes)) return;
 
-        season.episodes.forEach((episode: any) => {
+        season.episodes.forEach((episode) => {
           episodes.push({
             seasonNumber: season.number,
             episodeNumber: episode.number,
