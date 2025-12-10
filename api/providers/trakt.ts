@@ -1,6 +1,9 @@
 /**
  * Trakt Provider Wrapper for Vercel
  * Uses relative imports instead of path aliases
+ *
+ * NOTE: This is a duplicate of server/providers/trakt.ts
+ * Keep in sync when making changes! Only the imports differ.
  */
 
 import type { MediaType, OverallRating, EpisodeRatingEntry } from '../../lib/types/domain.js';

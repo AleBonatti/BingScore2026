@@ -1,6 +1,9 @@
 /**
  * Trakt Provider
  * API client for Trakt.tv ratings
+ *
+ * NOTE: This file is duplicated in api/providers/trakt.ts for Vercel deployment
+ * Keep in sync when making changes! Only the imports differ.
  */
 
 import type { MediaType, OverallRating, EpisodeRatingEntry } from '@/lib/types/domain.js';

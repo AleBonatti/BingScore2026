@@ -1,6 +1,9 @@
 /**
  * TMDB Provider
  * API client for The Movie Database
+ *
+ * NOTE: This file is duplicated in api/providers/tmdb.ts for Vercel deployment
+ * Keep in sync when making changes! Only the imports differ.
  */
 
 import type {
