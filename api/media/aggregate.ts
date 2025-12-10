@@ -4,10 +4,10 @@
  */
 
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { createTmdbProvider } from '../../server/providers/tmdb';
-import { createOmdbProvider } from '../../server/providers/omdb';
-import { createTraktProvider } from '../../server/providers/trakt';
-import { aggregateRatings } from '../../lib/domain/aggregation';
+import { createTmdbProvider } from '../providers/tmdb';
+import { createOmdbProvider } from '../providers/omdb';
+import { createTraktProvider } from '../providers/trakt';
+import { aggregateRatings } from '../lib/aggregation';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   // CORS headers
