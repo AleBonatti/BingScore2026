@@ -1,6 +1,9 @@
 /**
  * OMDb Provider Wrapper for Vercel
  * Uses relative imports instead of path aliases
+ *
+ * NOTE: This is a duplicate of server/providers/omdb.ts
+ * Keep in sync when making changes! Only the imports differ.
  */
 
 import type { OverallRating } from '../../lib/types/domain.js';

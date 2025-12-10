@@ -1,6 +1,9 @@
 /**
  * OMDb Provider
  * API client for Open Movie Database (IMDb ratings)
+ *
+ * NOTE: This file is duplicated in api/providers/omdb.ts for Vercel deployment
+ * Keep in sync when making changes! Only the imports differ.
  */
 
 import type { OverallRating } from '@/lib/types/domain.js';

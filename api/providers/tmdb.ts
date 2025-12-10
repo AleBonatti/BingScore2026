@@ -1,6 +1,9 @@
 /**
  * TMDB Provider Wrapper for Vercel
  * Uses relative imports instead of path aliases
+ *
+ * NOTE: This is a duplicate of server/providers/tmdb.ts
+ * Keep in sync when making changes! Only the imports differ.
  */
 
 import type {
