@@ -1,10 +1,10 @@
 /**
- * Trakt Provider
- * API client for Trakt.tv ratings
+ * Trakt Provider Wrapper for Vercel
+ * Uses relative imports instead of path aliases
  */
 
-import type { MediaType, OverallRating, EpisodeRatingEntry } from '@/lib/types/domain.js';
-import type { TraktSearchResult, TraktRating, TraktSeasonWithEpisodes } from '@/lib/types/providers.js';
+import type { MediaType, OverallRating, EpisodeRatingEntry } from '../../lib/types/domain.js';
+import type { TraktSearchResult, TraktRating, TraktSeasonWithEpisodes } from '../../lib/types/providers.js';
 
 export interface TraktProvider {
   resolveTraktId(tmdbId: number, mediaType: MediaType): Promise<string | null>;

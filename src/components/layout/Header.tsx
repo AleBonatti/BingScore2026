@@ -5,7 +5,7 @@
 
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Moon, Sun, GitBranch } from 'lucide-react';
+import { Moon, Sun } from 'lucide-react';
 
 export default function Header() {
   const [darkMode, setDarkMode] = useState(false);

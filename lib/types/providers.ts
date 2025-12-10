@@ -30,6 +30,39 @@ export interface TmdbEpisode {
   vote_average: number | null;
 }
 
+export interface TmdbMediaDetails {
+  id: number;
+  title?: string;
+  name?: string;
+  overview?: string;
+  poster_path?: string | null;
+  backdrop_path?: string | null;
+  release_date?: string;
+  first_air_date?: string;
+  vote_average?: number;
+  vote_count?: number;
+  number_of_seasons?: number;
+}
+
+export interface TmdbSeasonDetails {
+  season_number: number;
+  episodes: TmdbEpisode[];
+}
+
+export interface TmdbSearchResultItem {
+  id: number;
+  media_type: 'movie' | 'tv' | 'person';
+  title?: string;
+  name?: string;
+  original_title?: string;
+  original_name?: string;
+  overview?: string;
+  poster_path?: string | null;
+  backdrop_path?: string | null;
+  release_date?: string;
+  first_air_date?: string;
+}
+
 // OMDb Types
 export interface OmdbResponse {
   Title: string;
@@ -60,4 +93,13 @@ export interface TraktEpisode {
   title: string;
   rating: number | null;
   votes: number | null;
+}
+
+export interface TraktSeasonWithEpisodes {
+  number: number;
+  episodes?: Array<{
+    number: number;
+    title?: string;
+    rating?: number | null;
+  }>;
 }

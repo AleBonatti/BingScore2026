@@ -1,10 +1,10 @@
 /**
- * OMDb Provider
- * API client for Open Movie Database (IMDb ratings)
+ * OMDb Provider Wrapper for Vercel
+ * Uses relative imports instead of path aliases
  */
 
-import type { OverallRating } from '@/lib/types/domain.js';
-import type { OmdbResponse } from '@/lib/types/providers.js';
+import type { OverallRating } from '../../lib/types/domain.js';
+import type { OmdbResponse } from '../../lib/types/providers.js';
 
 export interface OmdbProvider {
   getOverallRatingByImdbId(imdbId: string): Promise<OverallRating | null>;
@@ -28,7 +28,6 @@ export function createOmdbProvider(apiKey: string): OmdbProvider {
         return null;
       }
 
-      // Parse rating and votes
       const rating = parseFloat(data.imdbRating);
       const votes = parseInt(data.imdbVotes?.replace(/,/g, '') || '0', 10);
 

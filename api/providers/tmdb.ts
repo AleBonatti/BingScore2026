@@ -1,6 +1,6 @@
 /**
- * TMDB Provider
- * API client for The Movie Database
+ * TMDB Provider Wrapper for Vercel
+ * Uses relative imports instead of path aliases
  */
 
 import type {
@@ -8,14 +8,14 @@ import type {
   MediaType,
   OverallRating,
   EpisodeRatingEntry,
-} from '@/lib/types/domain.js';
+} from '../../lib/types/domain.js';
 import type {
   TmdbExternalIds,
   TmdbMediaDetails,
   TmdbSearchResultItem,
   TmdbSeasonDetails,
-} from '@/lib/types/providers.js';
-import { formatReleaseYear } from '@/lib/utils/format.js';
+} from '../../lib/types/providers.js';
+import { formatReleaseYear } from '../../lib/utils/format.js';
 
 export interface TmdbProvider {
   searchMulti(query: string): Promise<SearchResult[]>;
@@ -42,7 +42,6 @@ export function createTmdbProvider(apiKey: string): TmdbProvider {
       const data = (await response.json()) as { results?: TmdbSearchResultItem[] };
       const results = data.results || [];
 
-      // Filter and normalize results
       return results
         .filter((item): item is TmdbSearchResultItem & { media_type: 'movie' | 'tv' } =>
           item.media_type === 'movie' || item.media_type === 'tv'
@@ -119,7 +118,6 @@ export function createTmdbProvider(apiKey: string): TmdbProvider {
 
   const getEpisodeRatings = async (tmdbId: number): Promise<EpisodeRatingEntry[]> => {
     try {
-      // First get the TV show details to find out how many seasons
       const details = await getMediaDetails(tmdbId, 'tv');
       const numberOfSeasons = details.number_of_seasons || 0;
 
@@ -127,7 +125,6 @@ export function createTmdbProvider(apiKey: string): TmdbProvider {
         return [];
       }
 
-      // Fetch all seasons in parallel
       const seasonPromises: Promise<TmdbSeasonDetails | null>[] = [];
       for (let seasonNum = 1; seasonNum <= numberOfSeasons; seasonNum++) {
         seasonPromises.push(
@@ -139,7 +136,6 @@ export function createTmdbProvider(apiKey: string): TmdbProvider {
 
       const seasons = await Promise.all(seasonPromises);
 
-      // Extract episode ratings
       const episodes: EpisodeRatingEntry[] = [];
       seasons.forEach((season) => {
         if (!season || !season.episodes) return;

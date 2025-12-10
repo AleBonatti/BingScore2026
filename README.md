@@ -84,6 +84,30 @@ npm run server:dev
 - `npm run format` - Format code with Prettier
 - `npm run typecheck` - Check TypeScript types
 - `npm run build` - Build production bundle
+- `npm run vercel-build` - Build for Vercel deployment
+
+## Deployment
+
+### Deploy to Vercel
+
+This app is configured for serverless deployment on Vercel. See [VERCEL_DEPLOYMENT.md](VERCEL_DEPLOYMENT.md) for detailed instructions.
+
+**Quick Deploy**:
+
+```bash
+npm install -g vercel
+vercel login
+vercel link
+vercel env add TMDB_API_KEY production
+vercel env add OMDB_API_KEY production
+vercel env add TRAKT_CLIENT_ID production
+vercel --prod
+```
+
+The app will be deployed with:
+- Frontend: Static React app
+- Backend: 3 serverless functions (`/api/health`, `/api/search`, `/api/media/aggregate`)
+- All on Vercel's free tier
 
 ## Project Structure
 
@@ -93,10 +117,15 @@ npm run server:dev
 │   ├── pages/           # Page-level components
 │   ├── hooks/           # Custom React hooks
 │   └── styles/          # Global styles
-├── server/              # Backend (Fastify)
+├── server/              # Backend (Fastify - dev mode)
 │   ├── routes/          # API route handlers
 │   ├── plugins/         # Fastify plugins
 │   └── providers/       # External API clients
+├── api/                 # Serverless functions (Vercel)
+│   ├── health.ts        # Health check endpoint
+│   ├── search.ts        # Search endpoint
+│   └── media/           # Media endpoints
+│       └── aggregate.ts # Ratings aggregation
 ├── lib/                 # Shared code
 │   ├── domain/          # Business logic
 │   ├── types/           # TypeScript types
@@ -106,22 +135,54 @@ npm run server:dev
 
 ## Features
 
-### Phase 1 (Complete ✅)
+### Phase 1: Search & Ratings Aggregation ✅
 
-- ✅ Search for TV series and movies with autocomplete (300ms debounce)
-- ✅ View aggregated ratings from TMDB, IMDb, and Trakt
-- ✅ Episode-by-episode ratings for TV series with season selector
-- ✅ Dark mode support with toggle
-- ✅ Responsive design (mobile and desktop)
-- ✅ Beautiful UI with Framer Motion animations
-- ✅ Graceful error handling and loading states
+- ✅ **Smart Search**: Autocomplete with 300ms debounce
+- ✅ **Multi-Source Ratings**: Aggregate data from TMDB, IMDb, and Trakt
+- ✅ **Episode Ratings Table**: View ratings for all episodes with season selector
+- ✅ **Dark Mode**: System-aware theme toggle with localStorage persistence
+- ✅ **Responsive Design**: Mobile-first, works on all devices
+- ✅ **Smooth Animations**: Framer Motion for delightful UX
+- ✅ **Error Handling**: Graceful fallbacks and loading states
+
+### Phase 2: Episode Rating Charts ✅
+
+- ✅ **Interactive Charts**: Line charts with TMDB (blue) and Trakt (red) ratings
+- ✅ **Season Switching**: Smooth transitions between seasons with animations
+- ✅ **Season Averages**: Calculated averages displayed for quick quality assessment
+- ✅ **Episode Tooltips**: Hover to see episode number, title, and both ratings
+- ✅ **Missing Data Handling**: Graceful gaps for episodes without ratings
+- ✅ **Dark Mode Charts**: Automatic color adaptation for light/dark themes
+- ✅ **Season-Relative X-Axis**: Episodes always numbered 1, 2, 3... per season
+- ✅ **Compact Table View**: Lightweight episode table below chart
+
+### Design & UX
+
+- ✅ **Geist Font**: Self-hosted Vercel Geist Sans & Mono fonts
+- ✅ **Custom Color Palette**: Dust Gray, Ivory, Tuscan Sun, Shadow Gray, Grafite
+- ✅ **High Contrast**: WCAG-compliant contrast ratios in light mode
+- ✅ **GitHub Integration**: Header link to project repository
+
+### Testing
+
+- ✅ **Comprehensive Test Suite**: 29 tests covering critical functionality
+  - Chart data transformation utilities
+  - SearchBar user interactions
+  - AutocompleteResults rendering
+  - useDebounce hook timing behavior
 
 ## Documentation
 
-- Full documentation: [specs/001-search-ratings-aggregation/](specs/001-search-ratings-aggregation/)
+### Phase 1
+- [Specification](specs/001-search-ratings-aggregation/spec.md)
 - [Quickstart Guide](specs/001-search-ratings-aggregation/quickstart.md)
 - [Implementation Plan](specs/001-search-ratings-aggregation/plan.md)
 - [Data Model](specs/001-search-ratings-aggregation/data-model.md)
+
+### Phase 2
+- [Specification](specs/002-episode-charts/spec.md)
+- [Implementation Plan](specs/002-episode-charts/plan.md)
+- [Task List](specs/002-episode-charts/tasks.md)
 
 ## License
 
