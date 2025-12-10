@@ -57,28 +57,48 @@ import { createTmdbProvider } from '../server/providers/tmdb.js';
 import { createTmdbProvider } from '../server/providers/tmdb';
 ```
 
-#### Fix 3: Created api/tsconfig.json
-Added TypeScript configuration for the API directory to resolve `@/*` path aliases used in provider files.
+#### Fix 3: Runtime Path Resolution with tsconfig-paths
 
-**File**: `api/tsconfig.json`
+Added runtime path resolution to handle `@/*` imports in provider files.
+
+**Installed Package**:
+```bash
+npm install tsconfig-paths
+```
+
+**Created Helper**: `api/_helpers/register-paths.ts`
+```typescript
+import { register } from 'tsconfig-paths';
+import { resolve } from 'path';
+
+if (!(global as any).__PATHS_REGISTERED__) {
+  register({
+    baseUrl: resolve(__dirname, '../..'),
+    paths: {
+      '@/*': ['./*'],
+    },
+  });
+  (global as any).__PATHS_REGISTERED__ = true;
+}
+```
+
+**Updated API Functions** to import the helper first:
+```typescript
+// api/search.ts
+import './_helpers/register-paths';
+// ... rest of imports
+```
+
+#### Fix 4: Vercel Function Configuration
+
+Updated `vercel.json` to include necessary source files for bundling:
 ```json
 {
-  "compilerOptions": {
-    "target": "ES2022",
-    "module": "CommonJS",
-    "lib": ["ES2022"],
-    "skipLibCheck": true,
-    "strict": true,
-    "esModuleInterop": true,
-    "moduleResolution": "node",
-    "resolveJsonModule": true,
-    "baseUrl": "..",
-    "paths": {
-      "@/*": ["./*"]
+  "functions": {
+    "api/**/*.ts": {
+      "includeFiles": "server/**,lib/**"
     }
-  },
-  "include": ["./**/*"],
-  "exclude": ["node_modules"]
+  }
 }
 ```
 
